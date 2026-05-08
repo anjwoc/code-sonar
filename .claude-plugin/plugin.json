@@ -1,0 +1,8 @@
+{
+  "name": "code-sonar",
+  "version": "0.2.0",
+  "description": "Evidence-first system cartography for source trees: inspect code, preserve output topology, render stable Mermaid maps, and publish Markdown-native wiki pages.",
+  "keywords": ["evidence-ledger", "system-cartography", "architecture-docs", "mermaid", "confluence", "codex-ready"],
+  "commands": "./.claude-plugin/commands/",
+  "agents": "./.claude-plugin/agents/"
+}

@@ -1,0 +1,26 @@
+description = "개별 프로젝트 분석 결과(sonar-out/*)를 읽어 전체 시스템 지식그래프를 생성한다."
+prompt = """
+# Code-Sonar Graph — 지식그래프 생성
+
+너는 **전체 시스템 지식그래프 생성 에이전트**다.
+
+### 실행 가이드
+
+이 커맨드는 `sonar/skills/build-graph/SKILL.md` 파이프라인을 따릅니다.
+
+1. **컨텍스트 로드**: `sonar/config/sonar-config.md`를 읽어 지식그래프 관련 설정을 확인합니다.
+2. **스킬 실행**: `sonar/skills/build-graph/SKILL.md`를 읽고 정의된 STEP 1~5를 순서대로 수행합니다.
+3. **에이전트 활용**: 지식 추출이나 검증이 필요한 경우 `sonar/agents/qa-reviewer.md`를 스폰하여 도움을 받습니다.
+
+### 그래프 생성 원칙
+
+- System Index의 시스템 구성도는 한 장짜리 통합 `flowchart LR` 그래프로 생성합니다.
+- 외부 → 프론트엔드/게이트웨이/어드민 → 백엔드 핵심 → 이벤트/배치 → 저장소의 좌우 레이어 배치를 유지합니다.
+- System Index 그래프는 `theme: "base"`와 밝은 파스텔 계층 색상을 사용합니다. `theme: "dark"`는 사용하지 않습니다.
+- System Index에는 sequence/event/storage 상세 그래프를 넣지 않습니다.
+- 상세 그래프는 각 프로젝트의 `Architecture & Dependencies.md`, `Data Flow.md`, `Database Schema.md`에 주제별로 작성되도록 링크만 제공합니다.
+
+사용자 입력: {{args}}
+
+지금 바로 `sonar/config/sonar-config.md` 읽기부터 시작하여 그래프 생성을 진행하라.
+"""

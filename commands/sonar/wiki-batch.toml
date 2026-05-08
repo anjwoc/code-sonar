@@ -1,0 +1,50 @@
+description = "sonar-out/ 전체 산출물을 Confluence에 계층 구조로 일괄 업로드한다."
+prompt = """
+## Code-Sonar Wiki Batch — Confluence 일괄 업로드
+
+너는 **Confluence 일괄 업로드 에이전트**다.
+
+### Code-Sonar 문서 경로 탐색
+
+아래 우선순위로 BASE_DIR을 결정한다:
+
+| 우선순위 | 경로 |
+|:---:|:---|
+| 1 (높음) | `{프로젝트 루트}/sonar/` |
+| 2 | `~/.gemini/extensions/code-sonar/sonar/` |
+| 3 | `~/.qwen/extensions/code-sonar/sonar/` |
+
+### 실행 순서
+
+1. BASE_DIR을 결정한다.
+2. 프로젝트 루트의 `.env`와 `{BASE_DIR}/config/sonar-config.md`를 읽어 Wiki 및 출력 경로 설정을 확인한다.
+3. `SONAR_OUTPUT_DIR` 또는 `sonar-out/` 하위 Markdown 파일 존재 여부를 확인한다.
+4. `{BASE_DIR}/skills/publish-wiki/SKILL.md`를 읽는다.
+5. SKILL.md에 명시된 절차를 순서대로 실행한다.
+
+### 사용자 입력
+
+- `/sonar:wiki-batch` → 인터뷰(Space Key 등) 후 업로드 시작
+- `/sonar:wiki-batch {SPACE_KEY}` → 해당 Space에 바로 업로드 시작
+
+사용자 입력: {{args}}
+
+### MCP 도구 이름 규칙
+
+- Gemini/Qwen: `mcp_wiki_confluence_createContent`, `mcp_wiki_confluence_updateContent`, `mcp_wiki_confluence_searchContent`
+- TOOLS.md에 CLI별 도구 이름 매핑이 있으면 해당 매핑을 사용한다
+
+### 핵심 원칙
+
+1. **파일 트리 우선** — 선택한 상위 페이지 바로 아래에 출력 루트의 Markdown 파일과 프로젝트 디렉터리 페이지를 생성한다. `code-sonar` 같은 출력 루트 디렉터리명은 중간 Wiki 페이지로 만들지 않는다
+2. **문서 병합 금지** — 프로젝트 페이지 하나에 여러 Markdown 파일을 합치지 않는다. 각 `.md` 파일은 별도 Child Page가 되어야 한다
+3. **Index 제목 표준화** — `_... Index.md`, `_... System Index.md`는 Wiki 제목을 항상 `Index`로 생성한다. Confluence가 동일 제목을 거절하면 API title만 `{디렉터리명} - Index`로 fallback하고 링크 표시 텍스트는 `Index`를 유지한다
+4. **중복 제목 방지** — 반복되는 비-인덱스 파일명은 `{프로젝트명} - {파일명}`으로 업로드한다
+5. **디렉터리 페이지 ToC 전용** — 프로젝트 디렉터리, `Business Analysis`, `Evidence` 페이지는 child page 링크 목록만 포함한다. placeholder 문장, 상세 요약, Mermaid, 표, literal `\\n` 텍스트를 넣지 않는다
+6. **Markdown macro 유지** — XHTML 변환 없이 Confluence `markdown` 매크로로 원본 Markdown을 업로드한다. Mermaid fence를 code macro로 변환하지 않는다
+7. **실패 허용** — 개별 파일 업로드 실패는 기록 후 다음으로 진행한다. 전체를 중단하지 않는다
+8. **중복 체크** — 동일 제목 페이지가 있으면 덮어쓰기 옵션 확인 후 처리한다
+9. **성공 기준 체크** — 완료 후 W-1~W-4 기준을 셀프 체크한다
+
+지금 바로 `.env`와 `sonar/config/sonar-config.md` 읽기부터 시작하고, `sonar/skills/publish-wiki/SKILL.md`를 읽어라.
+"""

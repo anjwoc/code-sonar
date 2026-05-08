@@ -1,0 +1,3 @@
+display_name: Code-Sonar
+short_description: Evidence-first workflows for Code-Sonar analysis, graph, and wiki publishing work.
+default_prompt: Improve Code-Sonar using its evidence-first cartography rules, preserving output topology, stable Mermaid graphs, and Markdown-native wiki publishing.

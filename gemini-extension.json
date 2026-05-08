@@ -1,0 +1,6 @@
+{
+  "name": "code-sonar",
+  "version": "0.1.0",
+  "description": "Project architecture analysis, Mermaid documentation, and Confluence publishing workflow.",
+  "contextFileName": "SONAR.md"
+}
