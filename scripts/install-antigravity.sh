@@ -142,17 +142,27 @@ fi
 step 3 3 "Antigravity 글로벌 워크플로우 & Workspace"
 # ═══════════════════════════════════════════════════════
 
-# ─── Excalidraw 워크플로우 글로벌 등록 ──────────────────
-GLOBAL_SKILLS="$HOME/.antigravity/skills"
-mkdir -p "$GLOBAL_SKILLS/excalidraw"
+# ─── Excalidraw 워크플로우 글로벌 등록 (Antigravity UI) ─────
+# Antigravity Customizations > Workflows > Global 에 표시됨
+AG_GLOBAL_WORKFLOWS="$HOME/.gemini/antigravity/global_workflows"
+mkdir -p "$AG_GLOBAL_WORKFLOWS"
 
 if [ -f "$REPO_ROOT/.antigravity/prompts/excalidraw.md" ]; then
-  cp "$REPO_ROOT/.antigravity/prompts/excalidraw.md" "$GLOBAL_SKILLS/excalidraw/prompt.md"
-  cp "$REPO_ROOT/.antigravity/tasks/excalidraw-diagram.md" "$GLOBAL_SKILLS/excalidraw/task.md"
-  ok "Excalidraw 워크플로우 글로벌 등록"
-  log "$GLOBAL_SKILLS/excalidraw/"
+  cp "$REPO_ROOT/.antigravity/prompts/excalidraw.md" "$AG_GLOBAL_WORKFLOWS/excalidraw.md"
+  ok "Excalidraw 워크플로우 Antigravity 글로벌 등록"
+  log "$AG_GLOBAL_WORKFLOWS/excalidraw.md"
+  log "(Antigravity에서 '/' 입력 후 excalidraw 검색)"
 else
   warn "Excalidraw 워크플로우 파일을 찾을 수 없음"
+fi
+
+# ─── 스킬 참조 파일 복사 (antigravity-guide.md)  ─────────
+GLOBAL_SKILLS="$HOME/.antigravity/skills"
+mkdir -p "$GLOBAL_SKILLS/excalidraw"
+if [ -f "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" ]; then
+  cp "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" "$GLOBAL_SKILLS/excalidraw/excalidraw-guide.md"
+  ok "Excalidraw 스타일 가이드 글로벌 복사"
+  log "$GLOBAL_SKILLS/excalidraw/"
 fi
 
 # ─── 프로젝트 로컬 Skills 확인 ──────────────────────────
