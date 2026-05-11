@@ -55,7 +55,7 @@ fi
 ok "Node.js $(node --version)"
 
 # ═══════════════════════════════════════════════════════
-step 1 3 "Excalidraw MCP 확인"
+step 1 4 "Excalidraw MCP 확인"
 # ═══════════════════════════════════════════════════════
 
 log "npm에서 excalidraw-mcp 패키지 확인 중..."
@@ -93,7 +93,7 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════
-step 2 3 "프로젝트 MCP 설정 (.claude/settings.json)"
+step 2 4 "프로젝트 MCP 설정 (.claude/settings.json)"
 # ═══════════════════════════════════════════════════════
 
 mkdir -p "$REPO_ROOT/.claude"
@@ -139,7 +139,7 @@ JSON
 fi
 
 # ═══════════════════════════════════════════════════════
-step 3 3 "Antigravity 글로벌 워크플로우 & Workspace"
+step 3 4 "Antigravity 글로벌 워크플로우 & Workspace"
 # ═══════════════════════════════════════════════════════
 
 # ─── Excalidraw 워크플로우 글로벌 등록 (Antigravity UI) ─────
@@ -148,21 +148,42 @@ AG_GLOBAL_WORKFLOWS="$HOME/.gemini/antigravity/global_workflows"
 mkdir -p "$AG_GLOBAL_WORKFLOWS"
 
 if [ -f "$REPO_ROOT/.antigravity/prompts/excalidraw.md" ]; then
-  cp "$REPO_ROOT/.antigravity/prompts/excalidraw.md" "$AG_GLOBAL_WORKFLOWS/excalidraw.md"
-  ok "Excalidraw 워크플로우 Antigravity 글로벌 등록"
-  log "$AG_GLOBAL_WORKFLOWS/excalidraw.md"
-  log "(Antigravity에서 '/' 입력 후 excalidraw 검색)"
+  # UI가 워크플로우를 인식하려면 상단에 YAML Frontmatter가 필수입니다.
+  cat > "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md" <<EOF
+---
+description: "Code-Sonar: Excalidraw Diagram Workflow"
+---
+
+EOF
+  cat "$REPO_ROOT/.antigravity/prompts/excalidraw.md" >> "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md"
+  
+  # 가이드 파일의 내용도 워크플로우 하단에 덧붙여서 단일 파일로 구성 (선택 사항)
+  if [ -f "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" ]; then
+    echo -e "\n\n---\n" >> "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md"
+    cat "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" >> "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md"
+  fi
+
+  ok "Excalidraw 워크플로우 Antigravity 글로벌 등록 완료 (Frontmatter 포함)"
+  log "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md"
+  log "(Antigravity에서 '/' 입력 후 code-sonar-excalidraw 검색)"
 else
   warn "Excalidraw 워크플로우 파일을 찾을 수 없음"
 fi
 
-# ─── 스킬 참조 파일 복사 (antigravity-guide.md)  ─────────
-GLOBAL_SKILLS="$HOME/.antigravity/skills"
-mkdir -p "$GLOBAL_SKILLS/excalidraw"
-if [ -f "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" ]; then
-  cp "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" "$GLOBAL_SKILLS/excalidraw/excalidraw-guide.md"
-  ok "Excalidraw 스타일 가이드 글로벌 복사"
-  log "$GLOBAL_SKILLS/excalidraw/"
+# ─── Sonar Deep Research 워크플로우 글로벌 등록 ───────────
+if [ -f "$REPO_ROOT/.antigravity/prompts/sonar-deep.md" ]; then
+  cat > "$AG_GLOBAL_WORKFLOWS/code-sonar-deep.md" <<EOF
+---
+description: "Code-Sonar: Deep Research — 단일 프로젝트 심층 분석 (환경 매트릭스, 인테그레이션 플로우, 비즈니스 상태 머신, 질문 기반 답변)"
+---
+
+EOF
+  cat "$REPO_ROOT/.antigravity/prompts/sonar-deep.md" >> "$AG_GLOBAL_WORKFLOWS/code-sonar-deep.md"
+  ok "Sonar Deep Research 워크플로우 글로벌 등록 완료"
+  log "$AG_GLOBAL_WORKFLOWS/code-sonar-deep.md"
+  log "(Antigravity에서 '/' 입력 후 code-sonar-deep 검색)"
+else
+  warn "Sonar Deep Research 워크플로우 파일을 찾을 수 없음"
 fi
 
 # ─── 프로젝트 로컬 Skills 확인 ──────────────────────────
@@ -222,6 +243,43 @@ with open(path, 'w') as f:
   log "$WORKSPACE_FILE"
 fi
 
+# ═══════════════════════════════════════════════════════
+step 4 4 "Sonar Deep Research Workspace 설정"
+# ═══════════════════════════════════════════════════════
+
+DEEP_WORKSPACE="$REPO_ROOT/code-sonar.code-workspace"
+python3 -c "
+import json
+path = '$DEEP_WORKSPACE'
+try:
+    with open(path) as f:
+        d = json.load(f)
+    s = d.setdefault('settings', {})
+    changed = False
+    if 'sonarDeep.promptFile' not in s:
+        s['sonarDeep.promptFile'] = '.antigravity/prompts/sonar-deep.md'
+        changed = True
+    if 'sonarDeep.taskFile' not in s:
+        s['sonarDeep.taskFile'] = '.antigravity/tasks/sonar-deep-research.md'
+        changed = True
+    if changed:
+        with open(path, 'w') as f:
+            json.dump(d, f, indent=2, ensure_ascii=False)
+            f.write('\n')
+        print('updated')
+    else:
+        print('already set')
+except Exception as e:
+    print(f'skip: {e}')
+" | while IFS= read -r result; do
+  case "$result" in
+    updated)     ok "Workspace에 Sonar Deep Research 설정 추가" ;;
+    "already set") ok "Workspace 파일 확인 (Deep Research 이미 등록됨)" ;;
+    *)           log "$result" ;;
+  esac
+done
+log "$DEEP_WORKSPACE"
+
 # ─── 완료 ─────────────────────────────────────────────────
 echo ""
 echo "================================"
@@ -237,6 +295,9 @@ else
 fi
 echo ""
 echo "  Excalidraw 워크플로우:"
-echo "    1. \"기존 mermaid 코드에서 스타일 제거하고 관계만 재작성해줘\""
-echo "    2. \"diagram.excalidraw를 위 mermaid로 그려줘\""
+echo "    Antigravity에서 '/' 입력 → code-sonar-excalidraw 선택"
+echo ""
+echo "  Sonar Deep Research 워크플로우:"
+echo "    Antigravity에서 '/' 입력 → code-sonar-deep 선택"
+echo "    또는: /sonar:deep <프로젝트경로> [--questions questions.md]"
 echo ""

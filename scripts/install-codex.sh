@@ -35,6 +35,21 @@ Use this skill when the user asks to run or improve Code-Sonar, regenerate analy
 8. Publish Markdown through \`atls wiki ... --markdown-file\` so Mermaid fenced blocks render.
 9. If Excalidraw output is generated, prefer \`scripts/render-excalidraw-from-mermaid.js\`. Force Arrow Type \`직각\`: JSON arrows must use \`elbowed: true\`, \`roundness: null\`, port/rail routing, and horizontal/vertical \`points\`; diagonal two-point arrows, non-target node crossings, and label-node overlaps are rejected. Storage/external-resource edges must be protocol-colored: \`JDBC/JPA\` blue, \`Redis\` rose, \`Spring Data\` violet, \`Elasticsearch\`/\`index/read\` amber, with labels in the same color family.
 
+## Deep Research Mode (/sonar:deep)
+
+Use when the user asks for deep analysis of a **single project** — e.g. "affiliate 프로젝트 딥리서치", "/sonar:deep", or when a questions file is provided.
+
+1. Read \`$REPO_ROOT/sonar/skills/deep-research/SKILL.md\` instead of analyze-project.
+2. Load \`SONAR_DEEP_TARGET\` (single project path or name), \`SONAR_DEEP_QUESTIONS\` (optional questions file), \`SONAR_DEEP_ENVS\`, \`SONAR_CROSS_REPO_SEARCH\`, \`SONAR_CROSS_REPO_ORG\` from \`.env\`.
+3. Parse questions file (\`## Q\` sections) → extract \`SEARCH_KEYWORDS\` and \`FOCUS_AREAS\`.
+4. If \`SONAR_CROSS_REPO_SEARCH=true\`, run \`$REPO_ROOT/sonar/agents/cross-repo-tracer.md\` with GitHub MCP.
+5. Spawn in parallel: \`env-matrix-analyst\`, \`integration-flow-analyst\`, \`business-workflow-analyst\` (deep), \`analyst-backend\` (deep).
+6. Generate \`QUESTION-ANSWER.md\` with \`[code: file:line]\` evidence for every question.
+7. Output to \`{output_dir}/{project}/deep-research/\` with \`DEEP-RESEARCH.md\` as the unified index.
+
+Key agents: \`$REPO_ROOT/sonar/agents/env-matrix-analyst.md\`, \`integration-flow-analyst.md\`, \`cross-repo-tracer.md\`
+Key templates: \`$REPO_ROOT/sonar/templates/DEEP-RESEARCH.md\`, \`ENV-MATRIX.md\`, \`INTEGRATION-FLOW.md\`, \`QUESTION-ANSWER.md\`
+
 ## Wiki Tree Rules
 
 - Do not create a middle page named after \`SONAR_OUTPUT_DIR\`.
