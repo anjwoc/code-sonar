@@ -81,11 +81,37 @@ GitHub source scan 규칙:
 
 | 항목 | 규칙 |
 |:---|:---|
-| System Index | 전체 통합 `flowchart LR` 그래프 한 장 |
+| System Index | 전체 통합 그래프 한 장 |
 | 세부 문서 | sequence, event, storage, 업무 데이터플로우 그래프 분리 |
-| Theme | `theme: "base"` + 밝은 파스텔 계층 색상 |
+| 렌더러 | `SONAR_DIAGRAM_RENDERER` 값에 따라 Mermaid(기본) 또는 Excalidraw |
+| Mermaid theme | `theme: "base"` + 밝은 파스텔 계층 색상 |
 | Mermaid safety | API path/URL/슬래시/콜론 포함 노드 라벨 quote 처리 |
-| 금지 문법 | `graph TD/LR`, `A --> B & C`, `A & B --> C` |
+| Mermaid 금지 문법 | `graph TD/LR`, `A --> B & C`, `A & B --> C` |
+| Excalidraw 출력 | `.excalidraw` 파일을 `SONAR_OUTPUT_DIR`에 저장, Markdown에서 `![[파일명.excalidraw]]`로 참조 |
+| Excalidraw 라우팅 | `scripts/render-excalidraw-from-mermaid.js` 우선 사용, Arrow Type `직각`, port/rail routing, bbox 관통/라벨 겹침 0건, 저장소 edge 프로토콜별 색상 구분 |
+
+### 7.5. Excalidraw 렌더러 설정
+
+`SONAR_DIAGRAM_RENDERER=excalidraw`로 설정된 경우 아래 규칙을 따른다.
+
+| 항목 | 값 | 설명 |
+|:---|:---|:---|
+| `diagram_renderer` | `${SONAR_DIAGRAM_RENDERER}` 또는 `mermaid` | `mermaid` 또는 `excalidraw` |
+| MCP 도구 | `read_me`, `create_view` | excalidraw-mcp 서버 제공 |
+| 출력 파일 | `{diagram-name}.excalidraw` | `SONAR_OUTPUT_DIR` 하위 해당 프로젝트 디렉터리에 저장 |
+| Markdown 참조 | `![[{diagram-name}.excalidraw]]` | Obsidian Excalidraw 플러그인에서 렌더링 |
+
+Excalidraw 렌더러 실행 순서:
+1. System Index Mermaid 또는 아키텍처 모델(YAML)에서 컨테이너와 관계를 Excalidraw elements JSON으로 변환한다.
+   - `rectangle` 노드: 시스템/서비스 컨테이너
+   - `arrow` 엣지: 프로토콜/목적 레이블 포함
+   - 레이어는 `frame` 요소로 그룹화
+2. `scripts/render-excalidraw-from-mermaid.js`를 우선 사용해 port/rail routing과 QA를 적용한다.
+3. 필요하면 `create_view` 도구를 호출해 elements JSON을 전달하고 인터랙티브 다이어그램을 렌더링한다.
+4. 생성된 elements JSON을 `.excalidraw` 파일(Excalidraw JSON 포맷)로 `SONAR_OUTPUT_DIR` 내 해당 경로에 저장한다.
+5. Markdown 문서의 Mermaid 블록 자리에 `![[{diagram-name}.excalidraw]]` 위키링크를 삽입한다.
+
+> Excalidraw MCP 서버가 없을 경우 `mermaid` 렌더러로 자동 폴백한다.
 
 ## 8. 위키 발행
 
@@ -133,6 +159,7 @@ GitHub source scan 규칙:
 | `SONAR_GITHUB_MAX_COMMITS` | commit 수집 상한 |
 | `SONAR_GITHUB_OUTPUT_DIR` | GitHub 근거 캐시 출력 위치 |
 | `SONAR_GITHUB_TOKEN_ENV` | token이 들어 있는 환경변수명 |
+| `SONAR_DIAGRAM_RENDERER` | 다이어그램 렌더러: `mermaid`(기본) 또는 `excalidraw` |
 | `SONAR_TEAMS_WEBHOOK` | 선택적 Teams 알림 |
 | `WIKI_URL` | REST fallback용 Confluence URL |
 | `WIKI_TOKEN` | REST fallback용 Confluence token |
@@ -144,6 +171,7 @@ GitHub source scan 규칙:
 | GitHub | PR/commit/workflow/issue 근거 수집 | `SONAR_GITHUB_ENABLED`가 true면 사용 |
 | DB/devdb | 테이블, SP, 의존성 확인 | 실행 시 확인 |
 | Confluence/atls | Wiki source scan 및 위키 발행 | 가능하면 사용 |
+| excalidraw-mcp | 아키텍처 다이어그램 렌더링 및 `.excalidraw` 파일 생성 | `SONAR_DIAGRAM_RENDERER=excalidraw`일 때 사용 |
 
 ## 12. 산출물 구조
 

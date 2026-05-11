@@ -50,6 +50,8 @@ flowchart LR
     class Database,Cache storage
 ```
 
+> Excalidraw로 내보낼 경우 `scripts/render-excalidraw-from-mermaid.js`를 우선 사용한다. 화살표는 모두 Arrow Type `직각`, `elbowed: true`, `roundness: null`, port/rail routing, 수평/수직 `points`를 적용하고 대각선 2-point arrow, 노드 관통, 라벨 겹침을 만들지 않는다.
+
 ## 3. 외부 의존성
 
 | 대상 | 유형 | 프로토콜/방식 | 목적 | 근거 |

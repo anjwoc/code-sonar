@@ -214,5 +214,6 @@ sonar/templates/DATA-FLOW.md 템플릿을 기반으로 Data Flow.md를 작성하
 - Mermaid는 graph TD/LR 대신 flowchart TD/LR를 사용하고 fanout 축약 문법을 쓰지 않음
 - Confluence Mermaid 호환을 위해 노드 라벨을 `"1. ..."`, `"- ..."`, `<br/>1. ...`, `<br/>- ...`처럼 Markdown list로 시작하지 않음. 단계는 `"Step 1 - ..."` 또는 `"S1: ..."`로 작성
 - Mermaid 라벨/메시지 안에 literal backslash+n을 쓰지 않음. 줄바꿈은 `<br/>`를 사용하고, sequenceDiagram 메시지는 한 줄 문장 또는 ` - `로 연결
+- Excalidraw 산출물을 함께 만들거나 변환할 때는 `scripts/render-excalidraw-from-mermaid.js`를 우선 사용. Arrow Type `직각`, `elbowed: true`, `roundness: null`, port/rail routing, 수평/수직 `points`를 사용하고 대각선 2-point arrow, 노드 관통, 라벨 겹침을 만들지 않음
 - 모든 관련 문서는 [[문서명]] 위키링크로 연결
 ```

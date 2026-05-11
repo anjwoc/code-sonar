@@ -2,6 +2,17 @@
 
 이 스킬은 `sonar-out/` 에 생성된 여러 도메인별 `ANALYZE.md` 산출물들을 파싱하여, 시스템 전체의 연관 관계를 보여주는 지식그래프(Knowledge Graph)를 생성하거나 갱신합니다.
 
+## 0. 렌더러 결정
+
+`.env`에서 `SONAR_DIAGRAM_RENDERER` 값을 읽는다.
+
+| 값 | 동작 |
+|:---|:---|
+| `mermaid` (기본, 미설정 시) | STEP 3에서 Mermaid 코드 블록 생성 |
+| `excalidraw` | STEP 3에서 excalidraw-mcp `create_view` 호출 후 `.excalidraw` 파일 저장 |
+
+`excalidraw`가 설정됐더라도 excalidraw-mcp 도구(`read_me`, `create_view`)를 사용할 수 없으면 `mermaid`로 폴백하고 경고를 남긴다.
+
 ## 1. 사전 조건
 - `sonar-out/` 디렉토리에 1개 이상의 `ANALYZE.md` 문서가 존재해야 함
 - `sonar/config/sonar-config.md` 로드 완료
@@ -43,10 +54,90 @@ relations:
 - 관계선에는 `protocol` 또는 `purpose` 중 하나 이상을 반드시 둡니다.
 - 확인되지 않은 연결은 Mermaid에 넣지 말고 표나 본문에 `> ⚠️ 확인 필요`로 남깁니다.
 
-### STEP 3: MOC (Map of Content) 및 Mermaid 생성
+### STEP 3: MOC (Map of Content) 및 다이어그램 생성
+
 추출한 데이터를 바탕으로 다음 두 가지를 작성합니다:
 1. **옵시디언 MOC (Index):** 관련된 모든 노트를 `[[ ]]` 링크로 묶어놓은 허브 페이지를 작성합니다.
-2. **Mermaid 다이어그램:** System Index에는 한 장짜리 통합 시스템 그래프를 작성하고, 상세 그래프는 프로젝트별 세부 문서에 주제별로 작성합니다.
+2. **다이어그램:** `SONAR_DIAGRAM_RENDERER` 값에 따라 아래 방식으로 생성합니다.
+
+#### 렌더러: `mermaid` (기본)
+
+System Index에는 한 장짜리 통합 시스템 그래프를 작성하고, 상세 그래프는 프로젝트별 세부 문서에 주제별로 작성합니다. Mermaid 작성 규칙은 `sonar/config/sonar-config.md` 섹션 7을 따릅니다.
+
+#### 렌더러: `excalidraw`
+
+Mermaid 코드 블록을 원본 모델로 삼아 `.excalidraw` 파일을 생성합니다. 우선 `scripts/render-excalidraw-from-mermaid.js`를 사용하고, excalidraw-mcp는 인터랙티브 미리보기나 보조 렌더링이 필요할 때만 사용합니다.
+
+권장 CLI:
+
+```bash
+node scripts/render-excalidraw-from-mermaid.js --input "{System Index.md}" --output "{diagram.excalidraw}"
+```
+
+**실행 순서:**
+
+1. **Mermaid 원본 추출**: System Index의 `flowchart LR` 블록을 읽고 노드, subgraph, class, edge를 정규화한다.
+
+2. **elements JSON 작성**: Mermaid 모델 또는 STEP 2.5에서 만든 아키텍처 모델을 Excalidraw elements JSON으로 변환한다.
+
+   변환 규칙:
+   - **컨테이너 노드** → `rectangle` 요소. `backgroundColor`는 레이어별로 구분한다.
+     - `external`: `#fef3c7`(노랑 계열)
+     - `frontend` / `gateway` / `admin`: `#dbeafe`(파랑 계열)
+     - `backend-core` / `event` / `batch`: `#dcfce7`(초록 계열)
+     - `storage`: `#fce7f3`(핑크 계열)
+   - **관계 엣지** → `arrow` 요소. `label`에 `protocol` 또는 `purpose`를 표기한다.
+   - **레이어 그룹** → `frame` 요소로 레이어 subgraph를 감싼다. `name`은 레이어명(한국어 허용).
+   - 노드 배치는 외부 → 프론트엔드/게이트웨이 → 백엔드 핵심 → 이벤트/배치 → 저장소 순서로 왼쪽에서 오른쪽으로 배열한다.
+   - 관계선은 20개 안팎으로 유지하고 보조 관계는 별도 표로 내린다.
+   - 모든 arrow는 Arrow Type `직각`, `elbowed: true`, `roundness: null`, 수평/수직 `points`를 사용한다.
+   - 여러 입력이 하나의 BFF/API로 모이면 target frame 왼쪽에 vertical merge rail을 만들고 마지막 segment만 target port로 진입한다.
+   - 저장소 방향 edge는 저장소 frame 왼쪽 storage rail에서 각 저장소 y-lane으로 분기한다.
+   - 이벤트 consumer가 backend API로 들어갈 때는 이벤트 frame에서 대각선으로 올리지 않고 backend 하단/좌측 진입 lane을 거친다.
+   - 시작/끝점은 source/target의 left/right/top/bottom port에만 붙인다. 선이 노드 중앙을 관통하면 안 된다.
+   - Area 박스 내부에는 균일한 패딩과 node gap을 둔다. 기본값은 좌우 `48px`, 상단 `56px`, 하단 `44px`, node gap 가로 `40px`, 세로 `36px`이다. node text는 rectangle에 binding하고 중앙 정렬한다.
+   - 저장소/외부 리소스 edge는 색상만으로 구분하지 말고 별도 rail, label 위치, label text/background를 함께 사용한다. `JDBC/JPA`는 blue, `Redis`는 rose, `Spring Data`는 violet, `Elasticsearch`/`index/read`는 amber 계열을 절제된 채도로 사용한다.
+   - 여러 색이 한 rail 위에 겹치면 가독성이 떨어지므로 protocol별 rail offset을 둔다.
+
+3. **다이어그램 렌더링/검증**: 생성 스크립트의 내장 QA 또는 별도 검증으로 아래 조건을 확인한다.
+   - arrow 수가 Mermaid edge 수와 일치
+   - 모든 arrow segment가 수평/수직
+   - source/target 외 노드 bbox 관통 0건
+   - arrow label과 node bbox 겹침 0건
+   - node label이 컴포넌트 박스를 넘치는 경우 0건
+   - frame-child padding/gap/center alignment 위반 0건
+   - 저장소 edge가 모두 같은 색이면 반려
+
+4. **파일 저장**: elements JSON을 Excalidraw 파일 포맷으로 `SONAR_OUTPUT_DIR`의 해당 경로에 저장한다.
+
+   저장 위치 및 파일명:
+   - System Index 통합 그래프: `{SONAR_OUTPUT_DIR}/{시스템명}-system-graph.excalidraw`
+   - 프로젝트별 세부 그래프: `{SONAR_OUTPUT_DIR}/{project-name}/{다이어그램-주제}.excalidraw`
+
+   파일 구조 (Excalidraw JSON 포맷):
+   ```json
+   {
+     "type": "excalidraw",
+     "version": 2,
+     "source": "https://github.com/excalidraw/excalidraw-mcp",
+     "elements": [ /* create_view에 전달한 elements 배열 */ ],
+     "appState": {
+       "viewBackgroundColor": "#ffffff",
+       "gridSize": null
+     },
+     "files": {}
+   }
+   ```
+
+5. **Markdown 참조 삽입**: Markdown 문서에서 Mermaid 코드 블록 자리에 아래 형태로 삽입한다.
+
+   ```markdown
+   > 다이어그램 렌더러: Excalidraw
+
+   ![[{파일명}.excalidraw]]
+   ```
+
+   Obsidian Excalidraw 플러그인이 설치된 경우 `![[...]]` 위키링크로 인라인 렌더링된다.
 
 ### STEP 3.5: 운영/서버 인벤토리 반영
 System Index에는 통합 그래프와 별개로 운영자가 바로 확인해야 하는 서버/도메인/인수인계 정보를 표로 작성합니다.

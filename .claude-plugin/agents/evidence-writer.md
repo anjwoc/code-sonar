@@ -42,6 +42,7 @@ model: sonnet
 - API path, URL, 슬래시, 콜론 포함 라벨은 quote 처리한다.
 - fanout 축약 문법을 쓰지 않는다.
 - System Index용 통합 그래프를 세부 문서에 중복 작성하지 않는다.
+- Excalidraw 산출물을 만들 때는 `scripts/render-excalidraw-from-mermaid.js`를 우선 사용한다. Arrow Type `직각`, `elbowed: true`, `roundness: null`, port/rail routing, 수평/수직 `points`를 사용하고 대각선 2-point arrow, 노드 관통, 라벨 겹침을 만들지 않는다. 저장소 edge는 `JDBC/JPA` blue, `Redis` rose, `Spring Data` violet, `Elasticsearch`/`index/read` amber 계열로 구분하고 label도 같은 계열을 사용한다.
 
 ## 완료 보고
 

@@ -18,6 +18,7 @@ model: sonnet
 5. `graph TD/LR`, `A --> B & C`, `A & B --> C`는 허용하지 않는다.
 6. Markdown fenced block은 Confluence markdown macro로 전달 가능한 원형을 유지한다.
 7. Index 파일은 위키 표시 제목 `Index` 정책을 전제로 작성한다.
+8. Excalidraw 산출물은 Arrow Type `직각`만 허용한다. JSON arrow는 `elbowed: true`, `roundness: null`, port/rail routing, 수평/수직 `points`를 사용해야 하며 대각선 2-point arrow, 노드 관통, 라벨 겹침은 반려한다. 저장소 edge가 모두 같은 색이면 반려하고 `JDBC/JPA`, `Redis`, `Spring Data`, `Elasticsearch`/`index/read`를 색상으로 구분한다.
 
 ## 직접 교정 가능 범위
 

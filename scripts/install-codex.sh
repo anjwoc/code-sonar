@@ -33,6 +33,7 @@ Use this skill when the user asks to run or improve Code-Sonar, regenerate analy
 6. Generate \`_business/Business Workflow.md\`, \`_business/Scenarios.md\`, and \`_business/Cross Project Traceability.md\`.
 7. Maintain \`_evidence/Evidence Ledger.md\` and \`_evidence/Evidence Audit.md\`.
 8. Publish Markdown through \`atls wiki ... --markdown-file\` so Mermaid fenced blocks render.
+9. If Excalidraw output is generated, prefer \`scripts/render-excalidraw-from-mermaid.js\`. Force Arrow Type \`직각\`: JSON arrows must use \`elbowed: true\`, \`roundness: null\`, port/rail routing, and horizontal/vertical \`points\`; diagonal two-point arrows, non-target node crossings, and label-node overlaps are rejected. Storage/external-resource edges must be protocol-colored: \`JDBC/JPA\` blue, \`Redis\` rose, \`Spring Data\` violet, \`Elasticsearch\`/\`index/read\` amber, with labels in the same color family.
 
 ## Wiki Tree Rules
 

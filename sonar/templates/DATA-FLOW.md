@@ -426,5 +426,6 @@ sequenceDiagram
 8. **Mermaid 안정성** — `graph TD/LR`와 `A --> B & C` 축약 문법을 쓰지 않고 `flowchart TD/LR`와 한 줄 한 관계를 사용한다. API path/URL/슬래시(`/`)가 들어간 노드 라벨은 `B["GET /v1/order/inflow/list 조회"]`처럼 quote 처리한다
 9. **Mermaid Markdown 호환성** — Confluence Mermaid는 노드 라벨 내부 Markdown list를 지원하지 않으므로 `"1. ..."`, `"- ..."`, `<br/>1. ...`, `<br/>- ...` 형태를 쓰지 않는다. 단계는 `"Step 1 - ..."` 또는 `"S1: ..."`로 쓴다
 10. **Literal newline 금지** — Mermaid 라벨/메시지 안에 literal backslash+n을 쓰지 않는다. 줄바꿈은 `<br/>`를 사용하고, sequenceDiagram 메시지는 한 문장 또는 ` - `로 이어 쓴다
-11. **한국어 작성** — 기술 용어(클래스명, 메서드명 등)는 원문 유지
-12. **Wikilink 사용** — 관련 문서는 `[[문서명]]` 형태로 연결
+11. **Excalidraw 내보내기** — 이 문서를 Excalidraw로 변환할 때 `scripts/render-excalidraw-from-mermaid.js`를 우선 사용한다. Arrow Type은 `직각`만 사용하고, JSON 생성 시 arrow element는 `elbowed: true`, `roundness: null`, port/rail routing, 수평/수직 `points`를 가져야 하며 대각선 2-point arrow, 노드 관통, 라벨 겹침은 금지한다
+12. **한국어 작성** — 기술 용어(클래스명, 메서드명 등)는 원문 유지
+13. **Wikilink 사용** — 관련 문서는 `[[문서명]]` 형태로 연결
