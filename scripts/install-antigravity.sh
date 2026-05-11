@@ -139,18 +139,32 @@ JSON
 fi
 
 # ═══════════════════════════════════════════════════════
-step 3 3 "Antigravity Skills & Workspace"
+step 3 3 "Antigravity 글로벌 워크플로우 & Workspace"
 # ═══════════════════════════════════════════════════════
 
+# ─── Excalidraw 워크플로우 글로벌 등록 ──────────────────
+GLOBAL_SKILLS="$HOME/.antigravity/skills"
+mkdir -p "$GLOBAL_SKILLS/excalidraw"
+
+if [ -f "$REPO_ROOT/.antigravity/prompts/excalidraw.md" ]; then
+  cp "$REPO_ROOT/.antigravity/prompts/excalidraw.md" "$GLOBAL_SKILLS/excalidraw/prompt.md"
+  cp "$REPO_ROOT/.antigravity/tasks/excalidraw-diagram.md" "$GLOBAL_SKILLS/excalidraw/task.md"
+  ok "Excalidraw 워크플로우 글로벌 등록"
+  log "$GLOBAL_SKILLS/excalidraw/"
+else
+  warn "Excalidraw 워크플로우 파일을 찾을 수 없음"
+fi
+
+# ─── 프로젝트 로컬 Skills 확인 ──────────────────────────
 SKILLS_DIR="$REPO_ROOT/.antigravity/skills"
 if [ -d "$SKILLS_DIR" ]; then
   SKILL_COUNT=$(find "$SKILLS_DIR" -name "*.md" | wc -l | xargs)
-  ok "Skills 디렉토리 (${SKILL_COUNT}개)"
+  ok "로컬 Skills 디렉토리 (${SKILL_COUNT}개)"
   find "$SKILLS_DIR" -name "*.md" | sort | while read -r f; do
     log "$(basename "$f")"
   done
 else
-  warn ".antigravity/skills 없음"
+  log "로컬 skills 없음 (선택사항)"
 fi
 
 WORKSPACE_FILE="$REPO_ROOT/code-sonar.code-workspace"
