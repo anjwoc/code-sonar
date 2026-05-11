@@ -1,9 +1,17 @@
 {
   "folders": [
-    { "path": "." }
+    {
+      "path": "."
+    }
   ],
   "settings": {
     "claudeCode.preferredLocation": "panel",
-    "claudeCode.allowDangerouslySkipPermissions": true
+    "claudeCode.allowDangerouslySkipPermissions": true,
+    "ralphLoop.promptFile": ".antigravity/prompts/excalidraw.md",
+    "ralphLoop.taskFile": ".antigravity/tasks/excalidraw-diagram.md",
+    "ralphLoop.progressFile": "progress.txt",
+    "ralphLoop.defaultMode": "Fast",
+    "ralphLoop.maxIterations": 10,
+    "ralphLoop.enabledBackpressure": []
   }
 }

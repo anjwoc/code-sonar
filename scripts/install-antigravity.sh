@@ -160,14 +160,41 @@ if [ ! -f "$WORKSPACE_FILE" ]; then
   "folders": [{ "path": "." }],
   "settings": {
     "claudeCode.preferredLocation": "panel",
-    "claudeCode.allowDangerouslySkipPermissions": true
+    "claudeCode.allowDangerouslySkipPermissions": true,
+    "ralphLoop.promptFile": ".antigravity/prompts/excalidraw.md",
+    "ralphLoop.taskFile": ".antigravity/tasks/excalidraw-diagram.md",
+    "ralphLoop.progressFile": "progress.txt",
+    "ralphLoop.defaultMode": "Fast",
+    "ralphLoop.maxIterations": 10,
+    "ralphLoop.enabledBackpressure": []
   }
 }
 JSON
-  ok "Workspace 파일 생성"
+  ok "Workspace 파일 생성 (Ralph Loop 워크플로우 포함)"
   log "$WORKSPACE_FILE"
 else
-  ok "Workspace 파일 확인"
+  # ralphLoop 설정이 없으면 추가
+  if ! python3 -c "import json; d=json.load(open('$WORKSPACE_FILE')); exit(0 if 'ralphLoop.promptFile' in d.get('settings',{}) else 1)" 2>/dev/null; then
+    python3 -c "
+import json
+path = '$WORKSPACE_FILE'
+with open(path) as f:
+    d = json.load(f)
+s = d.setdefault('settings', {})
+s.setdefault('ralphLoop.promptFile',       '.antigravity/prompts/excalidraw.md')
+s.setdefault('ralphLoop.taskFile',         '.antigravity/tasks/excalidraw-diagram.md')
+s.setdefault('ralphLoop.progressFile',     'progress.txt')
+s.setdefault('ralphLoop.defaultMode',      'Fast')
+s.setdefault('ralphLoop.maxIterations',    10)
+s.setdefault('ralphLoop.enabledBackpressure', [])
+with open(path, 'w') as f:
+    json.dump(d, f, indent=2, ensure_ascii=False)
+    f.write('\n')
+"
+    ok "Workspace에 Ralph Loop 워크플로우 설정 추가"
+  else
+    ok "Workspace 파일 확인 (Ralph Loop 이미 등록됨)"
+  fi
   log "$WORKSPACE_FILE"
 fi
 
