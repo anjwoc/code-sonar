@@ -109,7 +109,7 @@ flowchart LR
 ## 4. 운영 / 서버 인벤토리
 
 > System Index는 통합 그래프뿐 아니라 실제 운영자가 처음 확인해야 하는 서버, 도메인, Swagger, Fusion/RMS, 포트, 운영 정책을 함께 제공한다.
-> `_wiki-sources/`에 인수인계, 운영, 서버, DB 세팅, 모니터링, Fusion, RMS, Swagger, host/pod/TPS 문서가 있으면 이 섹션을 생략하지 않는다.
+> `resources/wiki/`에 인수인계, 운영, 서버, DB 세팅, 모니터링, Fusion, RMS, Swagger, host/pod/TPS 문서가 있으면 이 섹션을 생략하지 않는다.
 
 ### 4.1 서비스 엔드포인트
 

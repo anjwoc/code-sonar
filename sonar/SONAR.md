@@ -37,18 +37,26 @@ sonar/
 ├── config/
 │   └── sonar-config.md
 ├── skills/
-│   ├── analyze-project/SKILL.md
+│   ├── analyze-project/SKILL.md   ← 다수 프로젝트 균등 분석
+│   ├── deep-research/SKILL.md     ← 단일 프로젝트 심층 분석 (신규)
 │   ├── build-graph/SKILL.md
 │   └── publish-wiki/SKILL.md
 ├── agents/
 │   ├── analyst-backend.md
 │   ├── business-workflow-analyst.md
+│   ├── env-matrix-analyst.md        ← 환경별 차이 분석 (신규)
+│   ├── integration-flow-analyst.md  ← 인테그레이션/인증 체인 추적 (신규)
+│   ├── cross-repo-tracer.md         ← GitHub MCP 크로스레포 탐색 (신규)
 │   ├── evidence-auditor.md
 │   ├── github-source-scanner.md
 │   ├── qa-reviewer.md
 │   ├── wiki-source-scanner.md
 │   └── wiki-publisher.md
 └── templates/
+    ├── DEEP-RESEARCH.md       ← 심층 분석 종합 출력 (신규)
+    ├── ENV-MATRIX.md          ← 환경별 차이 매트릭스 (신규)
+    ├── INTEGRATION-FLOW.md    ← 인테그레이션 플로우 (신규)
+    ├── QUESTION-ANSWER.md     ← 질문별 코드 근거 답변 (신규)
     ├── ARCHITECTURE.md
     ├── BUSINESS-WORKFLOW.md
     ├── BACKEND/API 계열 템플릿
@@ -85,7 +93,31 @@ sonar/
 3. 시스템 Index에는 한 장짜리 통합 `flowchart LR`만 유지한다.
 4. 세부 시퀀스/이벤트/데이터플로우 그래프는 프로젝트별 상세 문서에 둔다.
 
-### 3. 위키 업로드
+### 3. 딥리서치 — 단일 프로젝트 심층 분석
+
+`/sonar:deep` 또는 `/sonar:deep <프로젝트경로>` 요청을 받으면:
+
+1. `.env`와 `sonar/config/sonar-config.md`를 읽는다.
+2. `sonar/skills/deep-research/SKILL.md`를 읽는다.
+3. `SONAR_DEEP_TARGET` 또는 인자로 단일 프로젝트를 특정한다.
+4. `SONAR_DEEP_QUESTIONS` 파일이 있으면 질문을 파싱하여 `SEARCH_KEYWORDS`와 `FOCUS_AREAS`를 추출한다.
+5. `SONAR_CROSS_REPO_SEARCH=true`이면 `cross-repo-tracer`로 GitHub MCP 탐색을 실행한다.
+6. `env-matrix-analyst`, `integration-flow-analyst`, `business-workflow-analyst`, `analyst-backend`를 **병렬** 스폰한다.
+7. `FOCUS_AREAS`가 있으면 각 질문별 집중 분석 후 `QUESTION-ANSWER.md`를 생성한다.
+8. `evidence-auditor`와 `qa-reviewer`로 산출물을 검증한다.
+9. `DEEP-RESEARCH.md`를 최종 통합 문서로 생성한다.
+
+**출력 경로:** `{output_dir}/{project}/deep-research/`
+
+**질문 첨부 방식:**
+```markdown
+# questions.md 형식 예시
+## Q1. {질문 내용}
+## Q2. {질문 내용}
+```
+`.env`에 `SONAR_DEEP_QUESTIONS=./questions.md` 또는 명령 인자 `--questions questions.md`로 전달.
+
+### 4. 위키 업로드
 
 `/sonar:wiki` 또는 `/sonar:wiki-batch` 요청을 받으면:
 
@@ -113,6 +145,10 @@ sonar/
 | S-8 | 비즈니스 레벨 워크플로우가 생성됨 | `_business/Business Workflow.md`, `_business/Scenarios.md`, `_business/Cross Project Traceability.md`가 업무 질문/운영 예외 중심인지 확인 |
 | S-9 | Evidence 검증 결과가 남음 | `_evidence/Evidence Ledger.md`, `_evidence/Evidence Audit.md` 확인 |
 | S-10 | GitHub source scan이 설정된 경우 repository/PR/commit 캐시가 생성됨 | `resources/github/GITHUB-SOURCE-INDEX.md` 확인 |
+| S-11 | deep-research 실행 시 `deep-research/DEEP-RESEARCH.md`가 생성됨 | 파일 존재 + 도메인 요약 테이블 포함 여부 확인 |
+| S-12 | deep-research 질문 첨부 시 `QUESTION-ANSWER.md`에 각 질문별 코드 근거(파일:라인) 또는 ⚠️가 있음 | QUESTION-ANSWER.md 내 Q 섹션 수 = 질문 수 |
+| S-13 | ENV-MATRIX.md가 SONAR_DEEP_ENVS에 명시한 모든 환경 컬럼을 포함함 | 컬럼 수 ≥ 환경 수 |
+| S-14 | INTEGRATION-FLOW.md에 아웃바운드 호출 전체 목록 표와 인증 체인 다이어그램이 있음 | 아웃바운드 표 존재 + sequenceDiagram 존재 |
 
 ---
 
