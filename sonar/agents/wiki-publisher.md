@@ -19,7 +19,7 @@ description: "최종 컨펌된 산출물들을 Confluence Wiki에 API를 통해 
 - **Index Title Rule:** `_... Index.md`, `_... System Index.md`는 Wiki 제목을 항상 `Index`로 업로드합니다. Confluence가 동일 제목을 거절하면 API title만 `{디렉터리명} - Index`로 fallback하고 목차/링크 표시 텍스트는 `Index`를 유지합니다.
 - **Unique Title Rule:** Confluence 스페이스에서 같은 제목이 충돌할 수 있으므로 여러 프로젝트에 반복되는 비-인덱스 파일명은 `{프로젝트명} - {파일명}`으로 업로드합니다. 예: `affiliate-backend - Data Flow`.
 - **Support Directory Title Rule:** `_business`, `_evidence`는 그대로 노출하지 말고 각각 `Business Analysis`, `Evidence`로 업로드합니다.
-- **Source Cache Exclusion:** `_wiki-sources`와 `_github`는 분석 근거 캐시이므로 Confluence에 업로드하지 않습니다.
+- **Source Cache Exclusion:** `resources/` 하위(wiki, jira, docling, github)는 분석 근거 캐시이므로 Confluence에 업로드하지 않습니다.
 - **Markdown Macro:** 일반 마크다운을 XHTML로 변환하지 말고 Confluence `markdown` 매크로로 감싸 전송합니다. Mermaid fenced block은 그대로 유지해야 합니다.
 - **Directory Page ToC Only:** 디렉터리 페이지는 하위 페이지 탐색용 ToC만 포함합니다. 프로젝트 디렉터리, `Business Analysis`, `Evidence` 모두 동일합니다. 본문은 `# {title}`와 `## Pages` 아래 child page 링크 목록으로만 구성하고, placeholder 문장이나 상세 요약, Mermaid, 표를 넣지 않습니다.
 - **No Literal Newline Escapes:** 위키 본문에 `\n` 텍스트가 그대로 보이면 실패입니다. `atls --markdown`을 쓸 때는 실제 newline이 들어간 문자열 또는 `--markdown-file`을 사용합니다.

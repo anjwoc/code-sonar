@@ -6,57 +6,67 @@ const path = require("path");
 const SOURCE = "code-sonar:render-excalidraw-from-mermaid";
 const UPDATED = Date.now();
 
+// Box palette (Group containers & internal boxes — pale tones, same color family)
+const BOX_PALETTE = ["#F9F9F9", "#F0F4F8", "#E8F5E9", "#FFF3E0", "#F3E5F5", "#E1F5FE", "#FBE9E7", "#EFEBE9", "#F1F8E9", "#E0F2F1"];
+
+// Arrow highlight palette (pastel — use only for arrows needing emphasis)
+const ARROW_PASTEL = ["#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFC9", "#BAE1FF", "#D5AAFF", "#F8BBD0", "#B2EBF2", "#C8E6C9", "#FFE0B2"];
+
 const CLASS_STYLE = {
-  external: { stroke: "#fb923c", fill: "#ffedd5", text: "#111827" },
-  app: { stroke: "#93c5fd", fill: "#dbeafe", text: "#111827" },
-  core: { stroke: "#22d3ee", fill: "#cffafe", text: "#111827" },
-  event: { stroke: "#4ade80", fill: "#dcfce7", text: "#111827" },
-  batch: { stroke: "#fbbf24", fill: "#fef3c7", text: "#111827" },
-  storage: { stroke: "#fb923c", fill: "#ffedd5", text: "#111827" },
+  external: { stroke: "#c9966b", fill: "#FFF3E0", text: "#78350f" },
+  app:      { stroke: "#74a8c9", fill: "#F0F4F8", text: "#1e3a5f" },
+  core:     { stroke: "#5baed1", fill: "#E1F5FE", text: "#0c4a6e" },
+  event:    { stroke: "#82b56e", fill: "#F1F8E9", text: "#1a4731" },
+  batch:    { stroke: "#c9a83e", fill: "#FFF3E0", text: "#78350f" },
+  storage:  { stroke: "#6ca876", fill: "#E8F5E9", text: "#1a4731" },
 };
 
 const LAYER_STYLE = {
-  ADMIN_LAYER: { stroke: "#cbd5e1", fill: "#f8fafc" },
-  FE_LAYER: { stroke: "#bfdbfe", fill: "#eff6ff" },
-  GW_LAYER: { stroke: "#ddd6fe", fill: "#f5f3ff" },
-  BE_LAYER: { stroke: "#a5f3fc", fill: "#ecfeff" },
-  EVENT_LAYER: { stroke: "#bbf7d0", fill: "#f0fdf4" },
-  BATCH_LAYER: { stroke: "#fde68a", fill: "#fffbeb" },
-  STORAGE_LAYER: { stroke: "#fed7aa", fill: "#fff7ed" },
+  ADMIN_LAYER:   { stroke: "#b0bec5", fill: "#F9F9F9" },
+  FE_LAYER:      { stroke: "#90b4d4", fill: "#F0F4F8" },
+  GW_LAYER:      { stroke: "#b39ddb", fill: "#F3E5F5" },
+  BE_LAYER:      { stroke: "#81c4e0", fill: "#E1F5FE" },
+  EVENT_LAYER:   { stroke: "#a5c89a", fill: "#F1F8E9" },
+  BATCH_LAYER:   { stroke: "#d4b483", fill: "#FFF3E0" },
+  STORAGE_LAYER: { stroke: "#90c8a0", fill: "#E8F5E9" },
 };
 
+// Default: grayscale. Highlight protocols: pastel tones.
 const EDGE_STYLE = {
-  neutral: { key: "neutral", stroke: "#334155", labelText: "#1f2937", labelFill: "#f8fafc", strokeWidth: 1.1, railOffset: 0 },
-  feign: { key: "feign", stroke: "#475569", labelText: "#334155", labelFill: "#f8fafc", strokeWidth: 1.1, railOffset: 0 },
-  webclient: { key: "webclient", stroke: "#0e7490", labelText: "#0e7490", labelFill: "#ecfeff", strokeWidth: 1.3, railOffset: 0 },
-  http: { key: "http", stroke: "#0f766e", labelText: "#0f766e", labelFill: "#f0fdfa", strokeWidth: 1.3, railOffset: 0 },
-  kafka: { key: "kafka", stroke: "#15803d", labelText: "#166534", labelFill: "#f0fdf4", strokeWidth: 1.3, railOffset: 0 },
-  jpa: { key: "jpa", stroke: "#1d4ed8", labelText: "#1d4ed8", labelFill: "#eff6ff", strokeWidth: 1.6, railOffset: -18 },
-  redis: { key: "redis", stroke: "#be123c", labelText: "#be123c", labelFill: "#fff1f2", strokeWidth: 1.6, railOffset: 18 },
-  springData: { key: "springData", stroke: "#6d28d9", labelText: "#6d28d9", labelFill: "#f5f3ff", strokeWidth: 1.6, railOffset: -6 },
-  elastic: { key: "elastic", stroke: "#b45309", labelText: "#b45309", labelFill: "#fffbeb", strokeWidth: 1.6, railOffset: 6 },
+  neutral:    { key: "neutral",    stroke: "#868e96", labelText: "#495057", labelFill: "#f8f9fa", strokeWidth: 1.1, railOffset: 0 },
+  feign:      { key: "feign",      stroke: "#adb5bd", labelText: "#495057", labelFill: "#f8f9fa", strokeWidth: 1.1, railOffset: 0 },
+  webclient:  { key: "webclient",  stroke: "#BAE1FF", labelText: "#1864ab", labelFill: "#e7f5ff", strokeWidth: 1.3, railOffset: 0 },
+  http:       { key: "http",       stroke: "#BAFFC9", labelText: "#2b8a3e", labelFill: "#ebfbee", strokeWidth: 1.3, railOffset: 0 },
+  kafka:      { key: "kafka",      stroke: "#B2EBF2", labelText: "#0c7a86", labelFill: "#e3fafc", strokeWidth: 1.3, railOffset: 0 },
+  jpa:        { key: "jpa",        stroke: "#BAE1FF", labelText: "#1864ab", labelFill: "#e7f5ff", strokeWidth: 1.6, railOffset: -18 },
+  redis:      { key: "redis",      stroke: "#FFB3BA", labelText: "#c92a2a", labelFill: "#fff5f5", strokeWidth: 1.6, railOffset: 18 },
+  springData: { key: "springData", stroke: "#D5AAFF", labelText: "#6741d9", labelFill: "#f3f0ff", strokeWidth: 1.6, railOffset: -6 },
+  elastic:    { key: "elastic",    stroke: "#FFDFBA", labelText: "#e67700", labelFill: "#fff9db", strokeWidth: 1.6, railOffset: 6 },
 };
 
 const LAYOUT_RULES = {
-  framePaddingX: 48,
-  framePaddingTop: 56,
-  framePaddingBottom: 44,
-  nodeGapX: 40,
-  nodeGapY: 36,
+  framePaddingX: 60,       // increased for label legibility
+  framePaddingTop: 60,     // ≥50px between Group Box top and first component
+  framePaddingBottom: 48,
+  nodeGapX: 100,           // Gap 2: Component-to-Component ≥100px
+  nodeGapY: 40,
   centerTolerance: 4,
-  frameMarginToleranceX: 20,
-  frameMarginToleranceY: 24,
+  frameMarginToleranceX: 24,
+  frameMarginToleranceY: 28,
 };
 
 const LAYOUT = {
-  EXT: { x: 40, y: 410, w: 240, h: 110 },
-  ADMIN_LAYER: { x: 340, y: 70, w: 600, h: 168 },
-  FE_LAYER: { x: 340, y: 290, w: 600, h: 298 },
-  GW_LAYER: { x: 340, y: 628, w: 600, h: 174 },
-  BE_LAYER: { x: 1010, y: 164, w: 920, h: 506 },
-  EVENT_LAYER: { x: 1010, y: 720, w: 920, h: 200 },
-  BATCH_LAYER: { x: 1010, y: 970, w: 620, h: 174 },
-  STORAGE_LAYER: { x: 2080, y: 92, w: 360, h: 820 },
+  // Gap 1 (EXT → first group): EXT ends at x=280, layers start at 280+120=400
+  EXT:           { x: 40,   y: 410, w: 240, h: 110 },
+  ADMIN_LAYER:   { x: 400,  y: 70,  w: 640, h: 168 },
+  FE_LAYER:      { x: 400,  y: 290, w: 640, h: 298 },
+  GW_LAYER:      { x: 400,  y: 628, w: 640, h: 174 },
+  // Gap 2 (FE/GW group → BE): 400+640+110=1150
+  BE_LAYER:      { x: 1150, y: 164, w: 960, h: 506 },
+  EVENT_LAYER:   { x: 1150, y: 720, w: 960, h: 200 },
+  BATCH_LAYER:   { x: 1150, y: 970, w: 660, h: 174 },
+  // Gap 3 (BE → STORAGE): 1150+960+150=2260 (within 140-170px target)
+  STORAGE_LAYER: { x: 2310, y: 92,  w: 380, h: 860 },
 };
 
 const NODE_LAYOUT = {
@@ -78,8 +88,8 @@ const NODE_LAYOUT = {
   REDIS: { w: 250, h: 66 },
 };
 
-const INBOUND_RAIL_X = LAYOUT.BE_LAYER.x - 42;
-const STORAGE_RAIL_X = LAYOUT.STORAGE_LAYER.x - 58;
+const INBOUND_RAIL_X = LAYOUT.BE_LAYER.x - 80;   // merge rail left of BE_LAYER
+const STORAGE_RAIL_X = LAYOUT.STORAGE_LAYER.x - 90; // storage rail, room for staggered bends
 
 function usage() {
   console.error("Usage: render-excalidraw-from-mermaid.js --input <index.md> --output <file.excalidraw> [--validate-only]");
@@ -223,7 +233,7 @@ function baseElement(id, type, x, y, width, height, index) {
     fillStyle: "solid",
     strokeWidth: 1,
     strokeStyle: "solid",
-    roughness: 0,
+    roughness: 1,  // Medium roughness per visual style guidelines
     opacity: 100,
     groupIds: [],
     frameId: null,
@@ -402,7 +412,7 @@ function textElement(id, text, x, y, opts, nextIndex) {
     frameId: opts.frameId || null,
     text,
     fontSize,
-    fontFamily: 2,
+    fontFamily: 1,  // ExcaliFont — cohesive hand-drawn look
     textAlign: opts.textAlign || "center",
     verticalAlign: opts.verticalAlign || "middle",
     containerId: opts.containerId || null,
@@ -450,7 +460,8 @@ function arrowElement(id, absPoints, style, nextIndex) {
 function labelElement(edgeId, label, x, y, style, nextIndex) {
   const fontSize = 12;
   const metrics = textMetrics(label, fontSize);
-  return textElement(`tl_${edgeId}`, label, x - metrics.width / 2, y - metrics.height / 2, {
+  // Labels float 15px above horizontal segment mid-points (per style guideline §4)
+  return textElement(`tl_${edgeId}`, label, x - metrics.width / 2, y - metrics.height - 15, {
     fontSize,
     color: style.labelText,
     backgroundColor: style.labelFill,
@@ -484,16 +495,19 @@ function routeEdge(edge, boxes) {
 
   if (toSub === "STORAGE_LAYER") {
     const style = edgeStyleFor(edge.label);
-    const railX = STORAGE_RAIL_X + style.railOffset;
-    const labelLaneYOffset = {
-      API: -34,
-      PBK: 0,
-      BATCH: 34,
-    }[edge.from] || 0;
+    // Stagger rail X per source to avoid crossing (Bending Swap Rule §4)
+    // Lower destination Y → earlier bend (closer to source); higher → later bend
+    const fromOrder = { API: 0, PBK: 1, BATCH: 2 };
+    const staggerStep = 15; // 10-20px step-off per guideline
+    const sourceRank = fromOrder[edge.from] ?? 1;
+    const railX = STORAGE_RAIL_X + style.railOffset + sourceRank * staggerStep;
+    // Destination port Y-axis sorting: proportional to source Y
+    const destYOffset = fromRight[1] < toLeft[1] ? -12 : 12;
+    const labelLaneYOffset = { API: -34, PBK: 0, BATCH: 34 }[edge.from] || 0;
     const labelXOffset = edge.from === "BATCH" ? 86 : 38;
     return {
-      points: [fromRight, [railX, fromRight[1]], [railX, toLeft[1]], toLeft],
-      labelAt: [railX - labelXOffset, (fromRight[1] + toLeft[1]) / 2 + labelLaneYOffset],
+      points: [fromRight, [railX, fromRight[1]], [railX, toLeft[1] + destYOffset], [toLeft[0], toLeft[1] + destYOffset], toLeft],
+      labelAt: [railX - labelXOffset, fromRight[1] - 15],
     };
   }
 

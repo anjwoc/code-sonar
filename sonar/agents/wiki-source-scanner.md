@@ -16,7 +16,7 @@ description: "Confluence 원본 Wiki 페이지와 child page를 재귀 수집하
 - root URL 또는 page id 목록: `SONAR_WIKI_SOURCE_URLS`
 - 재귀 여부: `SONAR_WIKI_SOURCE_RECURSIVE` 기본 `true`
 - 최대 깊이: `SONAR_WIKI_SOURCE_MAX_DEPTH` 기본 `3`
-- 출력 위치: `SONAR_WIKI_SOURCE_OUTPUT_DIR` 또는 `${SONAR_OUTPUT_DIR}/_wiki-sources`
+- 출력 위치: `SONAR_WIKI_SOURCE_OUTPUT_DIR` 또는 `${SONAR_OUTPUT_DIR}/resources/wiki`
 
 ## 수집 규칙
 
@@ -30,9 +30,9 @@ description: "Confluence 원본 Wiki 페이지와 child page를 재귀 수집하
 
 ## 출력
 
-- `_wiki-sources/WIKI-SOURCE-INDEX.md`
-- `_wiki-sources/pages/{page-id}-{slug}.md`
-- `_evidence/Evidence Ledger.md`의 `wiki:{page-id}` 항목
+- `resources/wiki/WIKI-SOURCE-INDEX.md`
+- `resources/wiki/pages/{page-id}-{slug}.md`
+- `_evidence/01. Evidence Ledger.md`의 `wiki:{page-id}` 항목
 
 ## 페이지 템플릿
 

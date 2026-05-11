@@ -9,7 +9,7 @@ description: "GitHub MCP/gh/local git 근거를 수집하여 PR, commit, workflo
 
 ## 목표
 
-`.env`에서 `SONAR_GITHUB_ENABLED=true`일 때 GitHub MCP, `gh`, 로컬 git 순서로 repository 메타데이터, 최근 PR/commit, workflow, issue 연결 정보를 수집하고 `_github/`와 `_evidence/`에 기록합니다.
+`.env`에서 `SONAR_GITHUB_ENABLED=true`일 때 GitHub MCP, `gh`, 로컬 git 순서로 repository 메타데이터, 최근 PR/commit, workflow, issue 연결 정보를 수집하고 `resources/github/`와 `_evidence/`에 기록합니다.
 
 ## 입력
 
@@ -39,9 +39,9 @@ description: "GitHub MCP/gh/local git 근거를 수집하여 PR, commit, workflo
 
 ## 출력
 
-- `_github/GITHUB-SOURCE-INDEX.md`
-- `_github/{repo}/Repository.md`
-- `_evidence/Evidence Ledger.md`의 `github:{repo}:{kind}:{id}` 항목
+- `resources/github/GITHUB-SOURCE-INDEX.md`
+- `resources/github/{repo}/Repository.md`
+- `_evidence/01. Evidence Ledger.md`의 `github:{repo}:{kind}:{id}` 항목
 
 ## 주의
 

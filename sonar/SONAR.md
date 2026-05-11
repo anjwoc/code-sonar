@@ -19,7 +19,7 @@
 | C-2 | **사실 기반** | 코드에서 확인한 사실만 쓴다. 불확실하면 `> ⚠️ 확인 필요`로 남긴다 |
 | C-3 | **파일 트리 보존** | 출력 디렉터리의 프로젝트별 폴더 구조를 유지한다 |
 | C-4 | **문서 분리** | Index는 요약과 통합 그래프, 세부 문서는 아키텍처/API/비즈니스/데이터흐름 등 주제별로 작성한다 |
-| C-5 | **다이어그램 안정성** | `SONAR_DIAGRAM_RENDERER=mermaid`(기본)이면 `flowchart`를 사용하고 API path/URL 노드를 quote 처리한다. `excalidraw`이면 Mermaid 원본을 `scripts/render-excalidraw-from-mermaid.js`로 port/rail 기반 `.excalidraw` 파일로 저장한다 |
+| C-5 | **그래프 안정성** | Mermaid는 `flowchart`와 안전한 quote 라벨을 쓰고, Excalidraw는 Arrow Type을 `직각`으로 고정한다 |
 | C-6 | **한국어 산출물** | 문서는 한국어로 작성하되 클래스명, 메서드명, API path, 테이블명은 원문을 유지한다 |
 | C-7 | **품질 보존** | 기존 우수 산출물 수준의 상세도(위키 근거, 의존성 표, 모니터링 기준, 대표 흐름, 리스크)를 유지한다. 템플릿 정리나 파일명 변경을 이유로 문서를 얇게 만들지 않는다 |
 | C-8 | **Wiki 보조 근거** | `SONAR_WIKI_SOURCE_URLS`가 있으면 지정 Wiki와 child page를 먼저 수집하고, 설계 의도/정책/용어 근거로 연결한다 |
@@ -80,13 +80,10 @@ sonar/
 
 `/sonar:graph` 요청을 받으면:
 
-1. `.env`에서 `SONAR_DIAGRAM_RENDERER`를 확인한다 (기본: `mermaid`).
-2. `SONAR_OUTPUT_DIR`의 Markdown 문서를 읽는다.
-3. `sonar/skills/build-graph/SKILL.md` 규칙을 적용한다.
-4. 시스템 Index에는 한 장짜리 통합 그래프만 유지한다.
-   - `mermaid`: `flowchart LR` 코드 블록
-   - `excalidraw`: Mermaid 원본 기반 `.excalidraw` 파일 저장, `![[...]]` 위키링크 삽입, 필요 시 `create_view`로 미리보기
-5. 세부 시퀀스/이벤트/데이터플로우 그래프는 프로젝트별 상세 문서에 둔다.
+1. `SONAR_OUTPUT_DIR`의 Markdown 문서를 읽는다.
+2. `sonar/skills/build-graph/SKILL.md` 규칙을 적용한다.
+3. 시스템 Index에는 한 장짜리 통합 `flowchart LR`만 유지한다.
+4. 세부 시퀀스/이벤트/데이터플로우 그래프는 프로젝트별 상세 문서에 둔다.
 
 ### 3. 위키 업로드
 
@@ -106,16 +103,16 @@ sonar/
 | # | 기준 | 확인 방법 |
 |:---|:---|:---|
 | S-1 | 프로젝트별 Index와 상세 문서가 생성됨 | `find "$SONAR_OUTPUT_DIR" -maxdepth 2 -type f -name '*.md'` |
-| S-2 | System Index는 통합 그래프를 유지함 | `mermaid`: `flowchart LR` 및 상세 그래프 분리 확인 / `excalidraw`: `.excalidraw` 파일 존재 및 `![[...]]` 링크 확인 |
+| S-2 | System Index는 통합 그래프를 유지함 | `flowchart LR` 및 상세 그래프 분리 확인 |
 | S-3 | Data Flow 문서는 sequenceDiagram과 업무 데이터플로우를 포함함 | `Data Flow.md` 점검 |
 | S-4 | Mermaid가 Confluence에서 렌더링 가능한 형태임 | quote 처리, fanout 축약 제거, markdown macro 확인 |
 | S-5 | Wiki 업로드 시 디렉터리별 child page 구조가 유지됨 | `atls wiki children <page-id>` |
 | S-5a | 디렉터리 페이지가 ToC 전용이고 literal `\n` placeholder가 없음 | 대표 디렉터리 page storage 확인 |
 | S-6 | 문서 품질이 유지됨 | 각 문서에 코드 근거, 시스템 의존성, 대표 흐름, 운영/리스크 정보가 충분히 포함됨 |
-| S-7 | Wiki source scan이 설정된 경우 원문/요약 캐시가 생성됨 | `_wiki-sources/WIKI-SOURCE-INDEX.md` 확인 |
+| S-7 | Wiki source scan이 설정된 경우 원문/요약 캐시가 생성됨 | `resources/wiki/WIKI-SOURCE-INDEX.md` 확인 |
 | S-8 | 비즈니스 레벨 워크플로우가 생성됨 | `_business/Business Workflow.md`, `_business/Scenarios.md`, `_business/Cross Project Traceability.md`가 업무 질문/운영 예외 중심인지 확인 |
 | S-9 | Evidence 검증 결과가 남음 | `_evidence/Evidence Ledger.md`, `_evidence/Evidence Audit.md` 확인 |
-| S-10 | GitHub source scan이 설정된 경우 repository/PR/commit 캐시가 생성됨 | `_github/GITHUB-SOURCE-INDEX.md` 확인 |
+| S-10 | GitHub source scan이 설정된 경우 repository/PR/commit 캐시가 생성됨 | `resources/github/GITHUB-SOURCE-INDEX.md` 확인 |
 
 ---
 

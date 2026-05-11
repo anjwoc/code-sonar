@@ -24,7 +24,7 @@
 - `SONAR_WIKI_SOURCE_URLS`: 쉼표로 구분된 Confluence page URL 또는 page id
 - `SONAR_WIKI_SOURCE_RECURSIVE`: 기본 `true`
 - `SONAR_WIKI_SOURCE_MAX_DEPTH`: 기본 `3`
-- `SONAR_WIKI_SOURCE_OUTPUT_DIR`: 기본 `${SONAR_OUTPUT_DIR}/_wiki-sources`
+- `SONAR_WIKI_SOURCE_OUTPUT_DIR`: 기본 `${SONAR_OUTPUT_DIR}/resources/wiki`
 
 **처리 규칙:**
 - `atls`로 접근 가능하면 우선 사용하고, 실패 시 Confluence MCP 또는 REST fallback을 사용합니다.
@@ -34,9 +34,9 @@
 - 코드와 Wiki가 충돌하면 확정 표현을 피하고 양쪽 근거를 함께 남깁니다.
 
 **출력:**
-- `_wiki-sources/WIKI-SOURCE-INDEX.md`
-- `_wiki-sources/pages/{page-id}-{slug}.md`
-- `_evidence/Evidence Ledger.md`에 `wiki:{page-id}` 근거 항목 추가
+- `resources/wiki/WIKI-SOURCE-INDEX.md`
+- `resources/wiki/pages/{page-id}-{slug}.md`
+- `_evidence/01. Evidence Ledger.md`에 `wiki:{page-id}` 근거 항목 추가
 
 ### STEP 0.6: GitHub Source Scan 레이어
 `.env`에 `SONAR_GITHUB_ENABLED=true`가 설정되어 있으면 GitHub 근거를 수집합니다.
@@ -48,7 +48,7 @@
 - `SONAR_GITHUB_HOST`: GitHub Enterprise host
 - `SONAR_GITHUB_REPOS`: 명시 repository URL 목록. 없으면 `target_dir` 하위 git remote에서 추론
 - `SONAR_GITHUB_MAX_PULLS`, `SONAR_GITHUB_MAX_COMMITS`
-- `SONAR_GITHUB_OUTPUT_DIR`: 기본 `${SONAR_OUTPUT_DIR}/_github`
+- `SONAR_GITHUB_OUTPUT_DIR`: 기본 `${SONAR_OUTPUT_DIR}/resources/github`
 - `SONAR_GITHUB_TOKEN_ENV`: token 환경변수명
 
 **처리 규칙:**
@@ -58,9 +58,9 @@
 - PR/commit이 Jira/Wiki/릴리즈 맥락을 제공하면 `_business/`와 `_evidence/`에 연결합니다.
 
 **출력:**
-- `_github/GITHUB-SOURCE-INDEX.md`
-- `_github/{repo}/Repository.md`
-- `_evidence/Evidence Ledger.md`에 `github:{repo}:{kind}:{id}` 근거 항목 추가
+- `resources/github/GITHUB-SOURCE-INDEX.md`
+- `resources/github/{repo}/Repository.md`
+- `_evidence/01. Evidence Ledger.md`에 `github:{repo}:{kind}:{id}` 근거 항목 추가
 
 ### STEP 1: 아키텍처 및 프레임워크 스니핑
 타겟 프로젝트의 구조를 분석하여 백엔드(Spring, .NET)와 프론트엔드(Next.js, Vue 등)의 존재 여부를 파악합니다.
@@ -130,17 +130,17 @@ System Index는 전체 통합 그래프만 담당하고, 상세 그래프는 아
 
 **입력 근거:**
 - 각 프로젝트의 `Index`, `Architecture & Dependencies.md`, `Backend API.md`, `Business Logic.md`, `Data Flow.md`
-- `_wiki-sources/`에 수집된 설계/정책/운영 Wiki
-- `_github/`에 수집된 PR/commit/workflow 근거
-- `_evidence/Evidence Ledger.md`
+- `resources/wiki/`에 수집된 설계/정책/운영 Wiki
+- `resources/github/`에 수집된 PR/commit/workflow 근거
+- `_evidence/01. Evidence Ledger.md`
 
 **생성 문서:**
 
 | 파일명 | 설명 |
 |:---|:---|
-| `_business/Business Workflow.md` | 업무 상태별 질문, 판정 조건, 책임 프로젝트, 운영 확인 위치 |
-| `_business/Scenarios.md` | 운영/예외 중심 시나리오와 확인 순서, 운영자 판단, 후속 조치 |
-| `_business/Cross Project Traceability.md` | 업무 질문별 Wiki/프로젝트 문서/코드/테이블/로그 확인 순서 |
+| `_business/01. Business Workflow.md` | 업무 상태별 질문, 판정 조건, 책임 프로젝트, 운영 확인 위치 |
+| `_business/02. Scenarios.md` | 운영/예외 중심 시나리오와 확인 순서, 운영자 판단, 후속 조치 |
+| `_business/03. Cross Project Traceability.md` | 업무 질문별 Wiki/프로젝트 문서/코드/테이블/로그 확인 순서 |
 
 **작성 규칙:**
 - 프로젝트별 세부 문서 내용을 얇게 요약하지 말고, 업무 질문/판정 조건/운영 확인 위치를 새로 종합합니다.

@@ -49,8 +49,7 @@ Confluence 제목 충돌 방지를 위해 여러 프로젝트에서 반복되는
 
 | 로컬 디렉터리 | 처리 |
 |:---|:---|
-| `_wiki-sources` | 발행 제외 |
-| `_github` | 발행 제외 |
+| `resources` | 발행 제외 (wiki, jira, docling, github 캐시) |
 
 ### STEP 2: Wiki Publisher 에이전트 스폰
 `Agent(prompt, subagent_type: "wiki-publisher")`를 호출하여 실제 업로드 로직을 수행합니다.

@@ -11,8 +11,8 @@ description: "Code-Sonar 산출물의 주장과 실제 코드/Wiki/설정 근거
 
 - 프로젝트별 Markdown 문서
 - `_business/` 비즈니스 레벨 문서
-- `_wiki-sources/` 수집 문서
-- `_evidence/Evidence Ledger.md`
+- `resources/wiki/` 수집 문서
+- `_evidence/01. Evidence Ledger.md`
 
 ## Evidence Types
 
@@ -38,5 +38,5 @@ description: "Code-Sonar 산출물의 주장과 실제 코드/Wiki/설정 근거
 
 ## 출력
 
-- `_evidence/Evidence Audit.md`에 PASS/WARN/FAIL 표를 작성합니다.
+- `_evidence/02. Evidence Audit.md`에 PASS/WARN/FAIL 표를 작성합니다.
 - 필요한 경우 문서 본문에 `> ⚠️ 확인 필요` 주석을 추가합니다.
