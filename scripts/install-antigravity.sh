@@ -149,23 +149,22 @@ mkdir -p "$AG_GLOBAL_WORKFLOWS"
 
 if [ -f "$REPO_ROOT/.antigravity/prompts/excalidraw.md" ]; then
   # UI가 워크플로우를 인식하려면 상단에 YAML Frontmatter가 필수입니다.
-  cat > "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md" <<EOF
+  cat > "$AG_GLOBAL_WORKFLOWS/code-sonar.md" <<EOF
 ---
 description: "Code-Sonar: Excalidraw Diagram Workflow"
 ---
 
 EOF
-  cat "$REPO_ROOT/.antigravity/prompts/excalidraw.md" >> "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md"
-  
-  # 가이드 파일의 내용도 워크플로우 하단에 덧붙여서 단일 파일로 구성 (선택 사항)
+  cat "$REPO_ROOT/.antigravity/prompts/excalidraw.md" >> "$AG_GLOBAL_WORKFLOWS/code-sonar.md"
+
   if [ -f "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" ]; then
-    echo -e "\n\n---\n" >> "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md"
-    cat "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" >> "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md"
+    echo -e "\n\n---\n" >> "$AG_GLOBAL_WORKFLOWS/code-sonar.md"
+    cat "$REPO_ROOT/.antigravity/skills/excalidraw-guide.md" >> "$AG_GLOBAL_WORKFLOWS/code-sonar.md"
   fi
 
-  ok "Excalidraw 워크플로우 Antigravity 글로벌 등록 완료 (Frontmatter 포함)"
-  log "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md"
-  log "(Antigravity에서 '/' 입력 후 code-sonar-excalidraw 검색)"
+  ok "Excalidraw 워크플로우 Antigravity 글로벌 등록 완료"
+  log "$AG_GLOBAL_WORKFLOWS/code-sonar.md"
+  log "(Antigravity에서 '/' 입력 후 code-sonar 검색)"
 else
   warn "Excalidraw 워크플로우 파일을 찾을 수 없음"
 fi
@@ -295,7 +294,7 @@ else
 fi
 echo ""
 echo "  Excalidraw 워크플로우:"
-echo "    Antigravity에서 '/' 입력 → code-sonar-excalidraw 선택"
+echo "    Antigravity에서 '/' 입력 → code-sonar 선택"
 echo ""
 echo "  Sonar Deep Research 워크플로우:"
 echo "    Antigravity에서 '/' 입력 → code-sonar-deep 선택"
