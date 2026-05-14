@@ -158,7 +158,7 @@ ok "/sonar:deep 생성"
 
 # ─── /sonar:schema ─────────────────────────────────────
 cat > "$GEMINI_EXT_DIR/commands/sonar/schema.toml" <<TOML
-description = "Code-Sonar DB Schema — 프로젝트 DB 스키마 추출, Mermaid ERD 생성, 크로스서비스 엔티티 관계 다이어그램"
+description = "Code-Sonar DB Schema — DB 스키마 ERD, 크로스서비스 엔티티 관계, 비즈니스 플로우별 엔티티 상태 생명주기"
 prompt = """
 ## Code-Sonar DB Schema 에이전트
 
@@ -186,8 +186,9 @@ prompt = """
 
 ### 출력 파일
 
-- \`{산출물}/{project}/Database & Schema.md\` — 프로젝트별 ERD + 테이블 카탈로그 + SP
-- \`{산출물}/ENTITY-RELATIONSHIP.md\` — 서비스 간 테이블 오너십 + 시스템 전체 ERD
+- \`{산출물}/{project}/Database & Schema.md\` — ERD + 테이블 카탈로그 + SP
+- \`{산출물}/{project}/Entity State Lifecycle.md\` — 비즈니스 플로우 × 엔티티 상태 매트릭스
+- \`{산출물}/ENTITY-RELATIONSHIP.md\` — 크로스서비스 엔티티 관계
 
 ### 사용자 입력
 

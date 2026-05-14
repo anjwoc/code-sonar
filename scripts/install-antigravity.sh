@@ -275,7 +275,7 @@ log "(Antigravity에서 '/' 입력 후 code-sonar-deep 검색)"
 # ─── 3. DB Schema 워크플로우: code-sonar-schema ─────────────
 cat > "$AG_GLOBAL_WORKFLOWS/code-sonar-schema.md" <<WORKFLOW
 ---
-description: "Code-Sonar: DB Schema — 프로젝트 DB 스키마 추출, Mermaid ERD 생성, 크로스서비스 엔티티 관계 다이어그램"
+description: "Code-Sonar: DB Schema — DB 스키마 ERD, 크로스서비스 엔티티 관계, 비즈니스 플로우별 엔티티 상태 생명주기"
 ---
 
 # Code-Sonar DB Schema 에이전트

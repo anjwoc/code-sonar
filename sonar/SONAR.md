@@ -45,7 +45,8 @@ sonar/
 ├── agents/
 │   ├── analyst-backend.md
 │   ├── business-workflow-analyst.md
-│   ├── db-schema-analyst.md         ← DB 스키마 + ERD 분석 (신규)
+│   ├── db-schema-analyst.md         ← DB 스키마 + ERD 분석
+│   ├── entity-lifecycle-analyst.md  ← 비즈니스 플로우 × 엔티티 상태 생명주기 (신규)
 │   ├── atlassian-adapter.md         ← atls + MCP 폴백 어댑터
 │   ├── env-matrix-analyst.md        ← 환경별 차이 분석
 │   ├── integration-flow-analyst.md  ← 인테그레이션/인증 체인 추적
@@ -56,8 +57,9 @@ sonar/
 │   ├── wiki-source-scanner.md
 │   └── wiki-publisher.md
 └── templates/
-    ├── DATABASE.md            ← 프로젝트별 DB 스키마 + ERD (신규)
-    ├── ENTITY-RELATIONSHIP.md ← 크로스서비스 엔티티 관계 (신규)
+    ├── DATABASE.md                  ← 프로젝트별 DB 스키마 + ERD
+    ├── ENTITY-RELATIONSHIP.md       ← 크로스서비스 엔티티 관계
+    ├── ENTITY-STATE-LIFECYCLE.md    ← 비즈니스 플로우 × 엔티티 상태 생명주기 (신규)
     ├── DEEP-RESEARCH.md       ← 심층 분석 종합 출력
     ├── ENV-MATRIX.md          ← 환경별 차이 매트릭스
     ├── INTEGRATION-FLOW.md    ← 인테그레이션 플로우
@@ -128,10 +130,10 @@ sonar/
 
 1. `.env`와 `sonar/config/sonar-config.md`를 읽는다.
 2. `sonar/skills/build-schema/SKILL.md`를 읽는다.
-3. 각 백엔드 프로젝트에 대해 `db-schema-analyst`를 **병렬** 스폰한다.
-4. 각 프로젝트의 `Database & Schema.md`를 생성한다.
+3. `db-schema-analyst`와 `entity-lifecycle-analyst`를 각 프로젝트에 **병렬** 스폰한다.
+4. 각 프로젝트의 `Database & Schema.md`와 `Entity State Lifecycle.md`를 생성한다.
 5. 멀티 프로젝트인 경우 `ENTITY-RELATIONSHIP.md`를 생성한다.
-6. `{output_dir}/Index.md`에 DB 분석 섹션을 추가한다.
+6. `{output_dir}/Index.md`에 DB 분석 + 생명주기 섹션을 추가한다.
 
 **단독 실행 또는 analyze-project 이후 보완 실행 모두 가능.**
 
@@ -170,6 +172,8 @@ sonar/
 | S-15 | 백엔드 프로젝트 분석 시 `Database & Schema.md`가 생성됨 | `find "$SONAR_OUTPUT_DIR" -name "Database & Schema.md"` |
 | S-16 | `Database & Schema.md`에 Mermaid `erDiagram` 블록이 있고 엔티티 3개 이상 포함됨 | erDiagram 블록 존재 + 엔티티 수 확인 |
 | S-17 | 멀티 프로젝트 분석 시 `ENTITY-RELATIONSHIP.md`가 생성됨 | 파일 존재 + 서비스-테이블 오너십 매핑 표 존재 |
+| S-18 | 상태 필드 보유 엔티티가 있는 프로젝트에 `Entity State Lifecycle.md`가 생성됨 | 파일 존재 + stateDiagram-v2 블록 + 비즈니스 플로우 × 상태 매트릭스 표 포함 |
+| S-19 | 각 상태 전이에 트리거 코드 근거(API/이벤트/배치 파일:라인)가 포함됨 | 매트릭스 표의 `처리 메서드` 컬럼에 `[code:]` 태그 존재 |
 
 ---
 
