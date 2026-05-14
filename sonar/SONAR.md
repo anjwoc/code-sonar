@@ -38,25 +38,30 @@ sonar/
 │   └── sonar-config.md
 ├── skills/
 │   ├── analyze-project/SKILL.md   ← 다수 프로젝트 균등 분석
-│   ├── deep-research/SKILL.md     ← 단일 프로젝트 심층 분석 (신규)
+│   ├── deep-research/SKILL.md     ← 단일 프로젝트 심층 분석
+│   ├── build-schema/SKILL.md      ← DB 스키마 + ERD 생성 (신규)
 │   ├── build-graph/SKILL.md
 │   └── publish-wiki/SKILL.md
 ├── agents/
 │   ├── analyst-backend.md
 │   ├── business-workflow-analyst.md
-│   ├── env-matrix-analyst.md        ← 환경별 차이 분석 (신규)
-│   ├── integration-flow-analyst.md  ← 인테그레이션/인증 체인 추적 (신규)
-│   ├── cross-repo-tracer.md         ← GitHub MCP 크로스레포 탐색 (신규)
+│   ├── db-schema-analyst.md         ← DB 스키마 + ERD 분석 (신규)
+│   ├── atlassian-adapter.md         ← atls + MCP 폴백 어댑터
+│   ├── env-matrix-analyst.md        ← 환경별 차이 분석
+│   ├── integration-flow-analyst.md  ← 인테그레이션/인증 체인 추적
+│   ├── cross-repo-tracer.md         ← GitHub MCP 크로스레포 탐색
 │   ├── evidence-auditor.md
 │   ├── github-source-scanner.md
 │   ├── qa-reviewer.md
 │   ├── wiki-source-scanner.md
 │   └── wiki-publisher.md
 └── templates/
-    ├── DEEP-RESEARCH.md       ← 심층 분석 종합 출력 (신규)
-    ├── ENV-MATRIX.md          ← 환경별 차이 매트릭스 (신규)
-    ├── INTEGRATION-FLOW.md    ← 인테그레이션 플로우 (신규)
-    ├── QUESTION-ANSWER.md     ← 질문별 코드 근거 답변 (신규)
+    ├── DATABASE.md            ← 프로젝트별 DB 스키마 + ERD (신규)
+    ├── ENTITY-RELATIONSHIP.md ← 크로스서비스 엔티티 관계 (신규)
+    ├── DEEP-RESEARCH.md       ← 심층 분석 종합 출력
+    ├── ENV-MATRIX.md          ← 환경별 차이 매트릭스
+    ├── INTEGRATION-FLOW.md    ← 인테그레이션 플로우
+    ├── QUESTION-ANSWER.md     ← 질문별 코드 근거 답변
     ├── ARCHITECTURE.md
     ├── BUSINESS-WORKFLOW.md
     ├── BACKEND/API 계열 템플릿
@@ -117,7 +122,20 @@ sonar/
 ```
 `.env`에 `SONAR_DEEP_QUESTIONS=./questions.md` 또는 명령 인자 `--questions questions.md`로 전달.
 
-### 4. 위키 업로드
+### 4. DB 스키마 & ERD 분석
+
+`/sonar:schema` 또는 `/sonar:schema <프로젝트경로>` 요청을 받으면:
+
+1. `.env`와 `sonar/config/sonar-config.md`를 읽는다.
+2. `sonar/skills/build-schema/SKILL.md`를 읽는다.
+3. 각 백엔드 프로젝트에 대해 `db-schema-analyst`를 **병렬** 스폰한다.
+4. 각 프로젝트의 `Database & Schema.md`를 생성한다.
+5. 멀티 프로젝트인 경우 `ENTITY-RELATIONSHIP.md`를 생성한다.
+6. `{output_dir}/Index.md`에 DB 분석 섹션을 추가한다.
+
+**단독 실행 또는 analyze-project 이후 보완 실행 모두 가능.**
+
+### 5. 위키 업로드
 
 `/sonar:wiki` 또는 `/sonar:wiki-batch` 요청을 받으면:
 
@@ -149,6 +167,9 @@ sonar/
 | S-12 | deep-research 질문 첨부 시 `QUESTION-ANSWER.md`에 각 질문별 코드 근거(파일:라인) 또는 ⚠️가 있음 | QUESTION-ANSWER.md 내 Q 섹션 수 = 질문 수 |
 | S-13 | ENV-MATRIX.md가 SONAR_DEEP_ENVS에 명시한 모든 환경 컬럼을 포함함 | 컬럼 수 ≥ 환경 수 |
 | S-14 | INTEGRATION-FLOW.md에 아웃바운드 호출 전체 목록 표와 인증 체인 다이어그램이 있음 | 아웃바운드 표 존재 + sequenceDiagram 존재 |
+| S-15 | 백엔드 프로젝트 분석 시 `Database & Schema.md`가 생성됨 | `find "$SONAR_OUTPUT_DIR" -name "Database & Schema.md"` |
+| S-16 | `Database & Schema.md`에 Mermaid `erDiagram` 블록이 있고 엔티티 3개 이상 포함됨 | erDiagram 블록 존재 + 엔티티 수 확인 |
+| S-17 | 멀티 프로젝트 분석 시 `ENTITY-RELATIONSHIP.md`가 생성됨 | 파일 존재 + 서비스-테이블 오너십 매핑 표 존재 |
 
 ---
 

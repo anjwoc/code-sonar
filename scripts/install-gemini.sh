@@ -156,6 +156,48 @@ prompt = """
 TOML
 ok "/sonar:deep 생성"
 
+# ─── /sonar:schema ─────────────────────────────────────
+cat > "$GEMINI_EXT_DIR/commands/sonar/schema.toml" <<TOML
+description = "Code-Sonar DB Schema — 프로젝트 DB 스키마 추출, Mermaid ERD 생성, 크로스서비스 엔티티 관계 다이어그램"
+prompt = """
+## Code-Sonar DB Schema 에이전트
+
+### 절대 경로 (설치 시 고정됨)
+
+| 항목 | 경로 |
+|:---|:---|
+| Plugin root | \`$REPO_ROOT\` |
+| Schema 규칙 | \`$REPO_ROOT/sonar/skills/build-schema/SKILL.md\` |
+| DB 분석 에이전트 | \`$REPO_ROOT/sonar/agents/db-schema-analyst.md\` |
+| 실행 설정 | \`$REPO_ROOT/.env\` |
+| 기본 분석 대상 | \`$SONAR_TARGET_DIR\` |
+| 산출물 출력 | \`$SONAR_OUTPUT_DIR\` |
+
+### 실행 순서
+
+1. \`$REPO_ROOT/sonar/SONAR.md\` 를 읽는다.
+2. \`$REPO_ROOT/sonar/skills/build-schema/SKILL.md\` 를 읽는다.
+3. \`$REPO_ROOT/.env\` 를 읽어 SONAR_TARGET_DIR, SONAR_MCP_DEEP_SCAN 을 확인한다.
+4. args에 경로가 있으면 그 경로를, 없으면 SONAR_TARGET_DIR 을 분석한다.
+5. \`$REPO_ROOT/sonar/agents/db-schema-analyst.md\` 를 각 프로젝트에 대해 병렬 스폰한다.
+6. 각 프로젝트에 \`$SONAR_OUTPUT_DIR/{프로젝트명}/Database & Schema.md\` 를 생성한다.
+7. 멀티 프로젝트인 경우 \`$SONAR_OUTPUT_DIR/ENTITY-RELATIONSHIP.md\` 를 생성한다.
+8. \`$SONAR_OUTPUT_DIR/Index.md\` 에 DB 분석 섹션을 추가한다.
+
+### 출력 파일
+
+- \`{산출물}/{project}/Database & Schema.md\` — 프로젝트별 ERD + 테이블 카탈로그 + SP
+- \`{산출물}/ENTITY-RELATIONSHIP.md\` — 서비스 간 테이블 오너십 + 시스템 전체 ERD
+
+### 사용자 입력
+
+args에 특정 프로젝트 경로가 있으면 그 프로젝트만 분석한다.
+
+{{args}}
+"""
+TOML
+ok "/sonar:schema 생성"
+
 # ─── /sonar:multi-scan ─────────────────────────────────
 cat > "$GEMINI_EXT_DIR/commands/sonar/multi-scan.toml" <<TOML
 description = "타겟 디렉토리 하위의 모든 프로젝트를 자동 탐색하고 전체 분석을 순차 실행한다."
@@ -297,6 +339,7 @@ echo ""
 echo "등록된 커맨드 (gemini에서 / 입력 후 선택):"
 echo "  /sonar:start      ← 프로젝트 전체 분석"
 echo "  /sonar:deep       ← 단일 프로젝트 심층 분석"
+echo "  /sonar:schema     ← DB 스키마 + ERD 생성"
 echo "  /sonar:multi-scan ← 다중 프로젝트 전체 분석"
 echo "  /sonar:graph      ← 지식그래프 생성"
 echo "  /sonar:wiki       ← Confluence 발행"

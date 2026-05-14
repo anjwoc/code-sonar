@@ -76,6 +76,11 @@
 - 모든 프로젝트에 대해 `Agent(prompt, subagent_type: "analyst-dataflow")`를 함께 스폰합니다.
 - 이 에이전트는 구조 분석과 **병렬**로 실행됩니다.
 
+**DB 스키마 분석 에이전트** — `sonar/templates/DATABASE.md` 기반:
+- `SONAR_DB_ANALYSIS=false`가 아닌 한 백엔드 프로젝트에 대해 `Agent(prompt, subagent_type: "db-schema-analyst")`를 스폰합니다.
+- 구조 분석 및 데이터플로우 분석과 **병렬**로 실행됩니다.
+- 출력: `{output_dir}/{project}/Database & Schema.md`
+
 > **Note:** 에이전트를 생성할 때 해당 템플릿과 타겟 경로, 엔트리포인트를 주입합니다.
 
 ### STEP 3: 병렬 분석 및 데이터 수집
@@ -122,6 +127,20 @@ System Index는 전체 통합 그래프만 담당하고, 상세 그래프는 아
 - `Data Flow.md`에는 대표 시나리오마다 `sequenceDiagram`과 첨부 예시 같은 업무 데이터플로우 `flowchart LR`를 함께 작성합니다.
 - 배치/이벤트/프론트/게이트웨이 프로젝트는 각각 Batch Jobs, Event Consumers, Pages & Components, Routing & Security처럼 사용자가 기대하는 세부 문서를 유지합니다.
 - `_{프로젝트명} Index.md`에는 해당 프로젝트 요약과 문서 링크를 두고, 상세 그래프를 중복 삽입하지 않습니다.
+
+### STEP 4.4: DB 스키마 & ERD 크로스서비스 통합
+
+모든 프로젝트의 `db-schema-analyst` 결과가 완료되면 크로스서비스 엔티티 관계 문서를 생성합니다.
+
+**담당 스킬:** `sonar/skills/build-schema/SKILL.md` Phase 2~3
+
+**처리:**
+- 각 프로젝트의 `Database & Schema.md` 에서 엔티티 오너십 정보를 집계
+- 공유 테이블/직접 DB 접근 패턴 감지
+- `{output_dir}/ENTITY-RELATIONSHIP.md` 생성
+- `{output_dir}/Index.md` 에 DB 분석 섹션 추가
+
+**건너뜀 조건:** `SONAR_DB_ANALYSIS=false` 이거나 분석된 프로젝트 전체가 프론트엔드 전용인 경우
 
 ### STEP 4.5: 비즈니스 레벨 워크플로우 레이어
 모든 프로젝트 문서가 생성된 뒤, 프로젝트 단위 설명을 넘어서 전체 시스템이 어떤 업무 흐름으로 연결되는지 별도 문서로 정리합니다.

@@ -272,7 +272,51 @@ ok "Deep Research 워크플로우 등록 완료: code-sonar-deep"
 log "$AG_GLOBAL_WORKFLOWS/code-sonar-deep.md"
 log "(Antigravity에서 '/' 입력 후 code-sonar-deep 검색)"
 
-# ─── 3. Excalidraw 워크플로우: code-sonar-excalidraw ────────
+# ─── 3. DB Schema 워크플로우: code-sonar-schema ─────────────
+cat > "$AG_GLOBAL_WORKFLOWS/code-sonar-schema.md" <<WORKFLOW
+---
+description: "Code-Sonar: DB Schema — 프로젝트 DB 스키마 추출, Mermaid ERD 생성, 크로스서비스 엔티티 관계 다이어그램"
+---
+
+# Code-Sonar DB Schema 에이전트
+
+## 절대 경로 (이 파일 생성 시점에 고정됨)
+
+| 항목 | 경로 |
+|:---|:---|
+| Plugin root | \`$REPO_ROOT\` |
+| Schema 규칙 | \`$REPO_ROOT/sonar/skills/build-schema/SKILL.md\` |
+| DB 분석 에이전트 | \`$REPO_ROOT/sonar/agents/db-schema-analyst.md\` |
+| 실행 설정 (.env) | \`$REPO_ROOT/.env\` |
+| 분석 대상 소스 | \`$SONAR_TARGET_DIR\` |
+| 산출물 출력 경로 | \`$SONAR_OUTPUT_DIR\` |
+
+## 시작 전 필수 작업
+
+**Step 1 — 규칙 파일 읽기**
+1. \`$REPO_ROOT/sonar/SONAR.md\`
+2. \`$REPO_ROOT/sonar/skills/build-schema/SKILL.md\`
+3. \`$REPO_ROOT/sonar/agents/db-schema-analyst.md\`
+4. \`$REPO_ROOT/.env\`
+
+**Step 2 — 분석 실행**
+- args에 경로가 있으면 그 경로를, 없으면 \`$SONAR_TARGET_DIR\` 을 분석한다.
+- 각 백엔드 프로젝트에 db-schema-analyst 를 병렬 스폰한다.
+
+**Step 3 — 출력**
+- \`$SONAR_OUTPUT_DIR/{project}/Database & Schema.md\` — ERD + 테이블 카탈로그 + SP
+- \`$SONAR_OUTPUT_DIR/ENTITY-RELATIONSHIP.md\` — 크로스서비스 엔티티 관계
+
+## 출력 위치
+
+모든 파일은 \`$SONAR_OUTPUT_DIR\` 하위에만 생성한다.
+WORKFLOW
+
+ok "DB Schema 워크플로우 등록 완료: code-sonar-schema"
+log "$AG_GLOBAL_WORKFLOWS/code-sonar-schema.md"
+log "(Antigravity에서 '/' 입력 후 code-sonar-schema 검색)"
+
+# ─── 4. Excalidraw 워크플로우: code-sonar-excalidraw ────────
 if [ -f "$REPO_ROOT/.antigravity/prompts/excalidraw.md" ]; then
   cat > "$AG_GLOBAL_WORKFLOWS/code-sonar-excalidraw.md" <<EOF
 ---
@@ -400,5 +444,6 @@ echo ""
 echo "  등록된 워크플로우 (Antigravity에서 '/' 입력 후 선택):"
 echo "    code-sonar            ← 프로젝트 전체 분석"
 echo "    code-sonar-deep       ← 단일 프로젝트 심층 분석"
+echo "    code-sonar-schema     ← DB 스키마 + ERD 생성"
 echo "    code-sonar-excalidraw ← Mermaid → Excalidraw 변환"
 echo ""
