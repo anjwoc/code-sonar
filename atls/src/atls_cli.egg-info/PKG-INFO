@@ -1,0 +1,78 @@
+Metadata-Version: 2.4
+Name: atls-cli
+Version: 0.1.0
+Summary: AI-friendly Atlassian CLI for Jira and Confluence
+Author: Jae C. Jeong
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: requests>=2.31.0
+
+# atls
+
+AI-friendly Atlassian CLI for Jira and Confluence.
+
+`atls`는 Jira / Confluence 작업을 AI 세션과 터미널에서 안정적으로 호출할 수 있게 만든 CLI다. 현재 구조는 팀 배포를 염두에 두고 `src` 기반 패키지 형태로 정리되어 있다.
+
+## 구조
+
+```text
+atsl/
+├── README.md
+├── pyproject.toml
+├── atls.py                  # 기존 절대경로 실행 호환 shim
+├── bin/
+│   └── atls                 # 로컬 실행 wrapper
+├── src/
+│   └── atls/
+│       ├── __init__.py
+│       ├── __main__.py
+│       ├── cli.py           # 실제 CLI 구현
+│       └── analysis/
+│           └── harness.py   # QA/GEMINI harness 분석기
+├── docs/
+│   ├── design/
+│   ├── guides/
+│   └── reference/
+└── scripts/
+    └── legacy/              # 이전 단독 스크립트 보관
+```
+
+## 실행
+
+```bash
+python3 atls.py meta
+python3 -m atls meta
+./bin/atls meta
+```
+
+## 설치
+
+로컬 개발:
+
+```bash
+python3 -m pip install -e .
+```
+
+팀 배포 전 검증:
+
+```bash
+python3 -m build
+pipx install dist/*.whl
+```
+
+## 주요 명령
+
+```bash
+atls meta
+atls doctor
+atls workflow daily-review
+atls workflow daily-review-detail
+atls workflow qa-gemini-harness --workspace-root /path/to/adcenter
+```
+
+## 배포 준비 체크리스트
+
+- `pyproject.toml` 기반 빌드 가능
+- `project.scripts.atls` 엔트리포인트 제공
+- 루트 shim으로 기존 절대경로 사용 유지
+- 문서/레거시 스크립트 역할 분리

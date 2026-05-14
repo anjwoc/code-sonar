@@ -1,0 +1,46 @@
+{
+  "manifest_version": "0.1",
+  "project_key": "sample-project",
+  "track": "gemini",
+  "task_id": "D-4",
+  "issue_key": "GEMINI-1792",
+  "category": "modal UX",
+  "priority": "P2",
+  "goal": "상품 선택 팝업 취소 및 이탈 시 confirm alert 정책을 검증한다.",
+  "touchpoints": [
+    "src/components/features/ad/registration/common/ProductSelectionLayer.tsx",
+    "src/components/features/ad/edit/AdGroupModify.tsx"
+  ],
+  "cases": [
+    {
+      "case_id": "cancel-button-alert",
+      "title": "변경사항이 있는 상태에서 취소 클릭 시 alert 노출",
+      "risk": "high",
+      "preconditions": [
+        "팝업이 열려 있다.",
+        "사용자가 변경사항을 만들었다."
+      ],
+      "actions": [
+        "취소 버튼을 클릭한다."
+      ],
+      "expected": [
+        "confirm alert가 노출된다.",
+        "문구가 기획 문구와 정확히 일치한다."
+      ],
+      "forbidden": [
+        "alert 없이 닫힌다.",
+        "문구가 다르다."
+      ],
+      "evidence": [
+        "screenshot",
+        "trace",
+        "dialog_text"
+      ],
+      "tags": [
+        "modal",
+        "alert",
+        "dirty-state"
+      ]
+    }
+  ]
+}

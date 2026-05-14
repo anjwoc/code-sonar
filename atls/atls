@@ -1,0 +1,13 @@
+#!/bin/sh
+
+SCRIPT="$0"
+while [ -L "$SCRIPT" ]; do
+  TARGET="$(readlink "$SCRIPT")"
+  case "$TARGET" in
+    /*) SCRIPT="$TARGET" ;;
+    *) SCRIPT="$(dirname "$SCRIPT")/$TARGET" ;;
+  esac
+done
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "$SCRIPT")" && pwd)"
+exec "$SCRIPT_DIR/bin/atls" "$@"

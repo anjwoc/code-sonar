@@ -1,0 +1,29 @@
+{
+  "project_key": "adcenter",
+  "runner": "playwright",
+  "base_url": "http://localhost:3000",
+  "auth": {
+    "strategy": "storage_state_bootstrap",
+    "login_provider": "GMKT",
+    "login_tab_selector": ".button__tab--gmarket",
+    "env_file": ".env.e2e.local",
+    "required_env": [
+      "E2E_GMARKET_ID",
+      "E2E_GMARKET_PASSWORD"
+    ],
+    "storage_state_path": "tests/.auth/user.json"
+  },
+  "selectors": {
+    "prefer_test_id": true,
+    "fallback_order": [
+      "data-testid",
+      "role",
+      "label",
+      "text"
+    ]
+  },
+  "artifacts": {
+    "html_report_dir": "tests/results/html-report",
+    "artifact_dir": "tests/results/artifacts"
+  }
+}

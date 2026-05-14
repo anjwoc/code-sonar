@@ -1,0 +1,186 @@
+{
+  "manifest_version": "0.1",
+  "project_key": "adcenter",
+  "track": "gemini",
+  "task_id": "GEMINI-1803",
+  "issue_key": "GEMINI-1803",
+  "category": "validation_rule",
+  "priority": "P0",
+  "goal": "최상단 입찰가 레이어의 PRD 정합성을 source-backed requirement 범위 안에서 검증한다.",
+  "source_summary": "/Users/jaecjeong/Documents/atls/jira/workflow/project_task_flow/2026-04-04/summary.md",
+  "source_task_plan": "/Users/jaecjeong/Documents/atls/jira/workflow/project_task_flow/2026-04-04/task_plans.md#GEMINI-1803",
+  "source_requirement_manifest": "docs/reference/issue-requirement-manifest.gemini-1803.example.json",
+  "touchpoints": [
+    "src/components/features/ad/registration/common/TopExposureBidSettingLayer.tsx",
+    "src/components/features/ad/registration/modules/GroupCreationModule.tsx",
+    "tests/e2e/issues/gemini-1803.spec.ts"
+  ],
+  "requires_auth": false,
+  "requires_seed_data": false,
+  "contract_mode": true,
+  "integrated_mode": false,
+  "related_prd_refs": [
+    "docs/prd/registration/MMRegistration2.md#4.3.3"
+  ],
+  "related_api_refs": [
+    "docs/openapi/Registration.md#queryFirstSlotOverbid"
+  ],
+  "evidence_sufficiency": "partial",
+  "needs_user_materials": true,
+  "missing_evidence": [
+    "왕관 아이콘 및 하이라이트의 exact visual spec",
+    "팝업 종료 후 바닥 영역의 exact interaction spec"
+  ],
+  "cases": [
+    {
+      "case_id": "top-bid-popup-opens",
+      "title": "입찰가 올리기 버튼으로 최상단 입찰가 설정 팝업 진입",
+      "risk": "medium",
+      "preconditions": [
+        "수동 광고 등록 맥락 또는 하네스 화면이 열려 있다.",
+        "최상단 입찰가 레이어를 열 수 있는 버튼이 노출되어 있다."
+      ],
+      "actions": [
+        "입찰가 올리기 또는 최상단 입찰가 레이어 다시 열기 버튼을 클릭한다."
+      ],
+      "expected": [
+        "검색결과 최상단 입찰가 설정하기 팝업이 열린다."
+      ],
+      "forbidden": [
+        "버튼 클릭 후 아무 반응이 없다.",
+        "다른 레이어가 열리거나 기존 화면에서만 상태가 바뀐다."
+      ],
+      "evidence": [
+        "video",
+        "screenshot",
+        "dom_assert"
+      ],
+      "tags": [
+        "modal",
+        "top-bid",
+        "entry"
+      ]
+    },
+    {
+      "case_id": "top-bid-live-win-rate",
+      "title": "입력 중 노출 확률 실시간 갱신",
+      "risk": "high",
+      "preconditions": [
+        "최상단 입찰가 설정 팝업이 열린 상태다.",
+        "입찰가 input이 기본 상태로 보인다."
+      ],
+      "actions": [
+        "입찰가 input에 유효한 퍼센트 값을 입력한다."
+      ],
+      "expected": [
+        "노출 확률이 '- %'에서 실제 퍼센트 값으로 갱신된다."
+      ],
+      "forbidden": [
+        "입력 중에도 노출 확률이 계속 '- %'로 남는다.",
+        "입력과 무관한 고정값이 표시된다."
+      ],
+      "evidence": [
+        "video",
+        "screenshot",
+        "dom_assert",
+        "state_assert"
+      ],
+      "tags": [
+        "top-bid",
+        "live-calculation",
+        "regression"
+      ]
+    },
+    {
+      "case_id": "top-bid-challenge-applies-recommendation",
+      "title": "최상단 노출 도전하기 버튼으로 추천 비율 적용 및 비활성화",
+      "risk": "high",
+      "preconditions": [
+        "최상단 입찰가 설정 팝업이 열린 상태다.",
+        "추천 비율이 존재한다."
+      ],
+      "actions": [
+        "최상단 노출 도전하기 버튼을 클릭한다."
+      ],
+      "expected": [
+        "입찰가 input 값이 추천 비율로 채워진다.",
+        "최상단 노출 도전하기 버튼이 비활성화된다."
+      ],
+      "forbidden": [
+        "버튼 클릭 후 input 값이 그대로 유지된다.",
+        "추천 비율 이상인데 버튼이 계속 활성 상태다."
+      ],
+      "evidence": [
+        "video",
+        "screenshot",
+        "dom_assert"
+      ],
+      "tags": [
+        "top-bid",
+        "recommendation",
+        "button-state"
+      ]
+    },
+    {
+      "case_id": "top-bid-visual-highlight",
+      "title": "추천 비율 이상일 때 왕관과 하이라이트 시각 요소 노출",
+      "risk": "medium",
+      "preconditions": [
+        "추천 비율 이상 입력 상태다."
+      ],
+      "actions": [
+        "노출 확률 영역을 확인한다."
+      ],
+      "expected": [
+        "왕관과 하이라이트가 시안 기준으로 노출된다."
+      ],
+      "forbidden": [
+        "시안과 다른 위치 또는 색상으로 노출된다."
+      ],
+      "evidence": [
+        "video",
+        "screenshot"
+      ],
+      "tags": [
+        "visual",
+        "top-bid"
+      ],
+      "execution_status": "blocked_by_missing_evidence",
+      "required_materials": [
+        "시안 캡처 또는 Jira 첨부 이미지"
+      ]
+    },
+    {
+      "case_id": "top-bid-bottom-area-follow-up",
+      "title": "팝업 종료 후 바닥 영역 상태 전이 검증",
+      "risk": "high",
+      "preconditions": [
+        "팝업에서 최상단 입찰가를 적용했다."
+      ],
+      "actions": [
+        "팝업을 닫고 바닥 영역 상태를 확인한다."
+      ],
+      "expected": [
+        "PRD가 정의한 input, 안내 문구, 최상단 입찰가 영역이 정확히 노출된다."
+      ],
+      "forbidden": [
+        "PRD에 없는 배너나 문구만 노출되고 기준 상태를 판정할 수 없다."
+      ],
+      "evidence": [
+        "video",
+        "screenshot",
+        "state_assert"
+      ],
+      "tags": [
+        "state-persistence",
+        "top-bid",
+        "follow-up"
+      ],
+      "execution_status": "blocked_by_missing_evidence",
+      "required_materials": [
+        "바닥 영역의 exact interaction spec",
+        "문구/숨김 조건이 보이는 시안 또는 Jira 코멘트"
+      ]
+    }
+  ]
+}

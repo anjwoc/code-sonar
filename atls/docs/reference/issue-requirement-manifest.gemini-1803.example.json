@@ -1,0 +1,144 @@
+{
+  "manifest_version": "0.1",
+  "project_key": "adcenter",
+  "issue_key": "GEMINI-1803",
+  "issue_title": "\"퍼스트 슬롯 비딩\" 모듈 현재 프론트 구현과 PRD 불일치",
+  "jira_status": "To Do",
+  "workflow_bucket": "todo",
+  "assignee": "정재철",
+  "requirements": [
+    {
+      "requirement_id": "R1",
+      "title": "최상단 입찰가 설정 팝업 노출",
+      "statement": "입찰가 올리기 버튼을 클릭하면 최상단 입찰가 설정 팝업이 노출되어야 한다.",
+      "requirement_type": "modal_flow",
+      "source_priority": "prd",
+      "sources": [
+        {
+          "source_type": "prd",
+          "source_ref": "docs/prd/registration/MMRegistration2.md#4.3.3",
+          "excerpt_summary": "입찰가 올리기 버튼 클릭 시 최상단 입찰가 설정 팝업 노출",
+          "confidence": "high",
+          "is_primary": true
+        },
+        {
+          "source_type": "jira_body",
+          "source_ref": "https://jira.gmarket.com/browse/GEMINI-1803",
+          "excerpt_summary": "퍼스트 슬롯 비딩 모듈의 프론트 구현이 PRD와 불일치",
+          "confidence": "medium",
+          "is_primary": false
+        }
+      ],
+      "evidence_sufficiency": "sufficient",
+      "implementation_allowed": true,
+      "needs_user_materials": false,
+      "missing_evidence": [],
+      "notes": "팝업 진입 자체는 PRD 문장으로 확정 가능하다."
+    },
+    {
+      "requirement_id": "R2",
+      "title": "입력 중 노출 확률 실시간 계산",
+      "statement": "입찰증액 퍼센트를 입력하면 노출 확률이 실시간으로 계산되어 표시되어야 한다.",
+      "requirement_type": "state_persistence",
+      "source_priority": "prd",
+      "sources": [
+        {
+          "source_type": "prd",
+          "source_ref": "docs/prd/registration/MMRegistration2.md#4.3.3",
+          "excerpt_summary": "입력 입찰증액%에 따라 front-end에서 실시간 계산된 노출 확률%",
+          "confidence": "high",
+          "is_primary": true
+        },
+        {
+          "source_type": "api_contract",
+          "source_ref": "docs/openapi/Registration.md#queryFirstSlotOverbid",
+          "excerpt_summary": "sellerInputOverbidWinRate 값을 반환하는 API 계약",
+          "confidence": "high",
+          "is_primary": false
+        }
+      ],
+      "evidence_sufficiency": "sufficient",
+      "implementation_allowed": true,
+      "needs_user_materials": false,
+      "missing_evidence": [],
+      "notes": "실시간 계산의 근거는 PRD, 계산값 source는 queryFirstSlotOverbid 응답으로 매핑할 수 있다."
+    },
+    {
+      "requirement_id": "R3",
+      "title": "추천 비율 도전 버튼 동작",
+      "statement": "최상단 노출 도전하기 버튼을 클릭하면 추천 입찰증액 비율이 자동 적용되어야 하며, 추천 비율 이상인 상태에서는 버튼이 비활성화되어야 한다.",
+      "requirement_type": "validation_rule",
+      "source_priority": "prd",
+      "sources": [
+        {
+          "source_type": "prd",
+          "source_ref": "docs/prd/registration/MMRegistration2.md#4.3.3",
+          "excerpt_summary": "최상단노출도전하기 버튼 클릭 시 추천 입찰증액% 자동 적용, 추천 증액비율% 이상인 경우 버튼 비활성화",
+          "confidence": "high",
+          "is_primary": true
+        }
+      ],
+      "evidence_sufficiency": "sufficient",
+      "implementation_allowed": true,
+      "needs_user_materials": false,
+      "missing_evidence": [],
+      "notes": "추천값의 exact 숫자는 서버 응답 기반이므로 하드코딩하지 않고 버튼 상태와 입력값 변경만 검증한다."
+    },
+    {
+      "requirement_id": "R4",
+      "title": "노출 확률 하이라이트와 왕관 표시",
+      "statement": "추천 증액비율 이상인 경우 노출 확률에는 노란색 하이라이트와 왕관 표시가 노출되어야 한다.",
+      "requirement_type": "visual_spec",
+      "source_priority": "prd",
+      "sources": [
+        {
+          "source_type": "prd",
+          "source_ref": "docs/prd/registration/MMRegistration2.md#4.3.3",
+          "excerpt_summary": "추천 증액비율 이상이면 노출확률 앞에 왕관 표기, 노란색 하이라이트 처리",
+          "confidence": "medium",
+          "is_primary": true
+        }
+      ],
+      "evidence_sufficiency": "partial",
+      "implementation_allowed": false,
+      "needs_user_materials": true,
+      "missing_evidence": [
+        {
+          "gap_type": "visual_exactness",
+          "description": "왕관 아이콘의 형태, 위치, 하이라이트 색상 기준이 PRD 텍스트만으로는 불충분하다.",
+          "required_material": "시안 캡처 또는 Jira 첨부 이미지",
+          "blocking": true
+        }
+      ],
+      "notes": "텍스트 PRD는 존재하지만 exact visual oracle이 부족하므로 자동 구현 기준으로는 확정하지 않는다."
+    },
+    {
+      "requirement_id": "R5",
+      "title": "팝업 종료 후 바닥 영역의 후속 상태",
+      "statement": "팝업에서 설정한 최상단 입찰가가 바닥 영역 input과 안내 문구, 상품별 최상단 입찰가 영역에 어떻게 반영되는지 명확히 정의되어야 한다.",
+      "requirement_type": "state_persistence",
+      "source_priority": "prd",
+      "sources": [
+        {
+          "source_type": "prd",
+          "source_ref": "docs/prd/registration/MMRegistration2.md#4.3.3",
+          "excerpt_summary": "팝업 종료 후 input 노출, 안내 문구, 추천입찰가 적용 버튼, 상품별 최상단 입찰가 노출",
+          "confidence": "medium",
+          "is_primary": true
+        }
+      ],
+      "evidence_sufficiency": "partial",
+      "implementation_allowed": false,
+      "needs_user_materials": true,
+      "missing_evidence": [
+        {
+          "gap_type": "interaction_detail",
+          "description": "바닥 영역의 상태 전이 순서와 exact 문구/숨김 조건이 텍스트만으로는 완전히 고정되지 않는다.",
+          "required_material": "바닥 영역 시안 또는 Jira 코멘트의 상세 동작 설명",
+          "blocking": true
+        }
+      ],
+      "notes": "현재 구현 검증은 팝업 레이어까지만 확정하는 것이 안전하다."
+    }
+  ]
+}

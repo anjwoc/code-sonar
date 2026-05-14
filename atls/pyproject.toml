@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atls-cli"
+version = "0.1.0"
+description = "AI-friendly Atlassian CLI for Jira and Confluence"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "requests>=2.31.0",
+]
+authors = [
+  { name = "Jae C. Jeong" }
+]
+
+[project.scripts]
+atls = "atls.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

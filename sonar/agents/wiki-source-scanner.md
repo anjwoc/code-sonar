@@ -18,10 +18,15 @@ description: "Confluence 원본 Wiki 페이지와 child page를 재귀 수집하
 - 최대 깊이: `SONAR_WIKI_SOURCE_MAX_DEPTH` 기본 `3`
 - 출력 위치: `SONAR_WIKI_SOURCE_OUTPUT_DIR` 또는 `${SONAR_OUTPUT_DIR}/resources/wiki`
 
+## Atlassian 연결 방법
+
+모든 Confluence 작업은 `sonar/agents/atlassian-adapter.md` 어댑터를 통해 실행한다.
+어댑터가 atls → 공식 Confluence MCP → 오류 순서로 자동 폴백을 처리한다.
+
 ## 수집 규칙
 
-1. `atls` CLI가 사용 가능하면 우선 사용합니다.
-2. `atls`가 실패하면 Confluence MCP 또는 REST fallback을 사용합니다.
+1. `sonar/agents/atlassian-adapter.md`를 통해 atls 또는 MCP로 수집합니다.
+2. atls가 실패하면 어댑터가 자동으로 Confluence MCP로 전환합니다.
 3. root page 밖으로 링크를 따라 확장하지 않습니다.
 4. 각 페이지마다 title, page id, URL, version, parent, breadcrumb, collected_at을 기록합니다.
 5. 본문은 Markdown으로 보존하고, Mermaid/표/코드블록은 가능한 원형을 유지합니다.
